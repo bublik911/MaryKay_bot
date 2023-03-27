@@ -46,7 +46,8 @@ async def add_client_name(message: Message, state: FSMContext):
 )
 async def add_client_phone(message: Message, state: FSMContext):
     await state.update_data(phone=phone_parse(message.text))
-    await message.answer("Выберете месяц рождения клиента", reply_markup=month_keyboard())
+    await message.answer("Выберете месяц рождения клиента",
+                         reply_markup=month_keyboard())
     await state.set_state(AddClient.month)
 
 
@@ -55,7 +56,8 @@ async def add_client_phone(message: Message, state: FSMContext):
 )
 async def add_client_month(message: Message, state: FSMContext):
     await state.update_data(month=month_to_date(message.text))
-    await message.answer("Выберете дату рождения клиента", reply_markup=day_keyboard())
+    await message.answer("Выберете дату рождения клиента",
+                         reply_markup=day_keyboard())
     await state.set_state(AddClient.day)
 
 
@@ -65,10 +67,10 @@ async def add_client_month(message: Message, state: FSMContext):
 async def add_client_day(message: Message, state: FSMContext):
     await state.update_data(day=message.text)
     client = await state.get_data()
-    await message.answer("Хотите добавить клиента со следующими параметрами?", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Хотите добавить клиента со следующими параметрами?")
     await message.answer(f"Имя: {client['name']}\n"
                          f"Телефон: +7{client['phone']}\n"
-                         f"Дата рождения: {client['month']}.{client['day']}",
+                         f"Дата рождения: {client['month']}-{client['day']}",
                          reply_markup=check_client_keyboard())
     await state.set_state(AddClient.commit)
 
@@ -79,12 +81,13 @@ async def add_client_day(message: Message, state: FSMContext):
 )
 async def commit(message: Message, state: FSMContext):
     client = await state.get_data()
-    pid = Consultant.select(Consultant.id).where(Consultant.chat_id == message.chat.id)
-    Client.create(pid=str(pid),
+    pid = Consultant.select(Consultant.id).where(Consultant.chat_id == message.chat.id).get()
+    Client.create(pid=pid,
                   name=client['name'],
                   phone=client['phone'],
                   date=date(1980, client['month'], int(client['day'])))
-    await message.answer("Это главное меню. Выберете, что хотите сделать?", reply_markup=main_menu_keyboard())
+    await message.answer("Это главное меню. Выберете, что хотите сделать?",
+                         reply_markup=main_menu_keyboard())
     await state.clear()
 
 
@@ -95,4 +98,5 @@ async def commit(message: Message, state: FSMContext):
 async def again(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AddClient.name)
-    await message.answer("Введите имя клиента", reply_markup=ReplyKeyboardRemove())
+    await message.answer("Введите имя клиента",
+                         reply_markup=ReplyKeyboardRemove())
