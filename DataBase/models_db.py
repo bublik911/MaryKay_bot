@@ -13,7 +13,7 @@ class Consultant(Model):
     id = AutoField()
     name = CharField()
     phone = CharField()
-    chat_id = IntegerField()
+    chat_id = IntegerField(null=True)
     all_message = TextField()
     birthday_message = TextField()
 
@@ -23,11 +23,12 @@ class Consultant(Model):
 
 
 class Client(Model):
-    pid = ForeignKeyField(Consultant, related_name='clients')
+    pid = ForeignKeyField(Consultant)
     name = CharField()
     phone = CharField()
-    chat_id = IntegerField()
+    chat_id = IntegerField(null=True)
     date = DateField()
+    deleted_at = DateField(null=True)
 
     class Meta:
         db_table = 'client'
