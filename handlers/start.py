@@ -1,19 +1,17 @@
+from DataBase.models_db import *
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command, Text
+from aiogram.fsm.context import FSMContext
 from keyboards.url_admin_keyboard import url_admin_keyboard
 from keyboards.client_or_consultant import client_or_consultant
 from keyboards.main_menu_keyboard import main_menu_keyboard
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.context import FSMContext
+from states import Start
 from handlers import add_client, check_clients
 from utils import phone_parse
-from DataBase.models_db import *
-
 router = Router()
 
 
-# отредачить сообщение
 @router.message(Command("start"))
 async def start_handler(message: Message):
     await message.answer(f"Здравствуйте, {message.from_user.first_name}! "
@@ -24,21 +22,16 @@ async def start_handler(message: Message):
                          reply_markup=client_or_consultant())
 
 
-class Phone(StatesGroup):
-    client = State()
-    consultant = State()
-
-
 @router.message(
     Text("Клиент")
 )
 async def client(message: Message, state: FSMContext):
     await message.answer("Введите свой номер телефона")
-    await state.set_state(Phone.client)
+    await state.set_state(Start.client)
 
 
 @router.message(
-    Phone.client
+    Start.client
 )
 async def client_check_finish(message: Message, state: FSMContext):
     if len(phone_parse(message.text)) < 10:
@@ -59,11 +52,11 @@ async def client_check_finish(message: Message, state: FSMContext):
 )
 async def consultant(message: Message, state: FSMContext):
     await message.answer("Введите свой номер телефона")
-    await state.set_state(Phone.consultant)
+    await state.set_state(Start.consultant)
 
 
 @router.message(
-    Phone.consultant
+    Start.consultant
 )
 async def consultant_check_finish(message: Message, state: FSMContext):
     if len(phone_parse(message.text)) < 10:

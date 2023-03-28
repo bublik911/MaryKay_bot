@@ -1,9 +1,8 @@
+from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from handlers import add_client, check_clients
 from keyboards.main_menu_keyboard import main_menu_keyboard
-from aiogram import Router
-
+from handlers import add_client, check_clients
 router = Router()
 
 

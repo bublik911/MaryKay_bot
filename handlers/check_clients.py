@@ -1,21 +1,14 @@
-import datetime
+from datetime import date
+from DataBase.models_db import *
 from aiogram import Router
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.filters import Text
-from utils import phone_parse, create_clients_list
+from aiogram.fsm.context import FSMContext
+from states import CheckBase
 from keyboards.main_menu_keyboard import main_menu_keyboard
 from keyboards.check_clients_keyboard import check_clients_keyboard
-from DataBase.models_db import *
+from utils import phone_parse, create_clients_list
 router = Router()
-
-
-class CheckBase(StatesGroup):
-    start = State()
-    ok = State()
-    delete = State()
-    check = State()
 
 
 @router.message(
@@ -58,7 +51,7 @@ async def delete(message: Message, state: FSMContext):
     CheckBase.delete
 )
 async def delete_commit(message: Message, state: FSMContext):
-    Client.update(deleted_at=datetime.date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
+    Client.update(deleted_at=date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
     await state.set_state(CheckBase.check)
     await message.answer("Клиент удален. Это обновленный список клиентов")
     await message.answer("\n".join(create_clients_list(message)),

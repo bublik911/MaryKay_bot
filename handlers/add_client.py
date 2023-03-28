@@ -1,26 +1,14 @@
 from datetime import date
-from DataBase.models_db import Client, Consultant
+from DataBase.models_db import *
 from aiogram import Router
 from utils import phone_parse, month_to_date
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from keyboards.month_keyboard import month_keyboard
 from keyboards.day_keyboard import day_keyboard
 from keyboards.check_client_keyboard import check_client_keyboard
 from keyboards.main_menu_keyboard import main_menu_keyboard
-
-
-class AddClient(StatesGroup):
-    name = State()
-    phone = State()
-    month = State()
-    day = State()
-    finish = State()
-    commit = State()
-
-
 router = Router()
 
 
