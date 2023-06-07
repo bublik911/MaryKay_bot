@@ -5,6 +5,7 @@ from utils import phone_parse, month_to_date
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
+from states import AddClient
 from keyboards.month_keyboard import month_keyboard
 from keyboards.day_keyboard import day_keyboard
 from keyboards.check_client_keyboard import check_client_keyboard
