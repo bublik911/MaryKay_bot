@@ -1,5 +1,5 @@
 from os import environ
-from  typing import Final
+from typing import Final
 
 
 class TgKeys:
