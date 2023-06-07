@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from states import CheckBase
 from keyboards.main_menu_keyboard import main_menu_keyboard
 from keyboards.check_clients_keyboard import check_clients_keyboard
-from utils import phone_parse, create_clients_list
+from misc.utils import phone_parse, create_clients_list
 router = Router()
 
 

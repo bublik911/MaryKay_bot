@@ -8,7 +8,7 @@ from keyboards.client_or_consultant import client_or_consultant
 from keyboards.main_menu_keyboard import main_menu_keyboard
 from states import Start
 from handlers import add_client, check_clients
-from utils import phone_parse
+from misc.utils import phone_parse
 router = Router()
 
 

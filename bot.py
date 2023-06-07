@@ -1,10 +1,11 @@
 import asyncio
+from misc import env
 from handlers import start, help, menu
 from aiogram import Bot, Dispatcher
 
 
 async def main():
-    bot = Bot(token='5775309553:AAHMhvke-BV7XNnIz6r-NEGphfx5XXUks0o')
+    bot = Bot(token=env.TgKeys.TOKEN)
     dp = Dispatcher()
 
     dp.include_routers(start.router, menu.router, help.router)
