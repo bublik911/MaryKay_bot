@@ -1,5 +1,7 @@
 from DataBase.models_db import *
 from aiogram.types import Message
+from datetime import date
+from aiogram import Bot
 months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
 
 
@@ -35,3 +37,32 @@ def create_clients_list(message: Message) -> list:
         response.append(f"{k} {client.name} {month}-{day}\n"
                         f" +7{client.phone}")
     return response
+
+
+def create_send_list(message: Message) -> list:
+    pid = Consultant.get(Consultant.chat_id == message.chat.id).id
+    clients = Client.select().where((Client.pid == pid) &
+                                    (Client.deleted_at.is_null()) &
+                                    (Client.chat_id.is_null(False)))
+    response = []
+    for client in clients:
+        response.append([client.chat_id, client.name])
+    return response
+
+
+async def birthday_sending(bot: Bot):
+    consultants = Consultant.select(Consultant.id, Consultant.chat_id, Consultant.birthday_message)
+    for consultant in consultants:
+        clients = Client.select().where((Client.pid == 1) &
+                                        (Client.deleted_at.is_null()) &
+                                        (Client.chat_id.is_null(False)))
+        for client in clients:
+            date_birth_month = client.date.month
+            date_birth_day = client.date.day
+            today_month = date.today().month
+            today_day = date.today().day
+            if today_month == date_birth_month and date_birth_day - today_day == 3:
+                await bot.send_message(client.chat_id, f"{client.name}!")
+                await bot.send_message(client.chat_id, consultant.birthday_message)
+                await bot.send_message(consultant.chat_id, f"Поздравление с днем рождения послано \n{client.name}\n"
+                                                           f"+7{client.phone}")

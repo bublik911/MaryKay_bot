@@ -8,7 +8,11 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.10"
 aiogram = "3.0.0b7"
 peewee = "^3.16.2"
+<<<<<<< HEAD
 pymysql = "^1.0.3"
+=======
+apscheduler = "^3.10.1"
+>>>>>>> f48bfa69fe1cb9f6287b68bd77c622b0c14bbaef
 
 [tool.poetry.dev-dependencies]
 
