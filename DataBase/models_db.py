@@ -2,7 +2,7 @@ from peewee import *
 
 db = MySQLDatabase(
     host='127.0.0.1',
-    user='root',
+    user='user',
     password='Root767!',
     database='mk'
 )
