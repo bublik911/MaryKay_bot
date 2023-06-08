@@ -565,7 +565,6 @@ dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
 
 [[package]]
-<<<<<<< HEAD
 name = "pymysql"
 version = "1.0.3"
 description = "Pure Python MySQL Driver"
@@ -579,7 +578,6 @@ files = [
 [package.extras]
 ed25519 = ["PyNaCl (>=1.4.0)"]
 rsa = ["cryptography"]
-=======
 name = "pytz"
 version = "2023.3"
 description = "World timezone definitions, modern and historical"
