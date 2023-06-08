@@ -619,7 +619,7 @@ files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
->>>>>>> f48bfa69fe1cb9f6287b68bd77c622b0c14bbaef
+
 
 [[package]]
 name = "typing-extensions"
@@ -752,8 +752,6 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-<<<<<<< HEAD
 content-hash = "8f419d0f16fb26a87f5138f6a1b82b4101143cdaadd7519350f08a6fb5304aa1"
-=======
 content-hash = "d34ebfa3312e5dbf6b2f357e165faaf486990ed79e70f9489c46e392796936b9"
->>>>>>> f48bfa69fe1cb9f6287b68bd77c622b0c14bbaef
+
