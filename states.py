@@ -20,3 +20,13 @@ class AddClient(StatesGroup):
     day = State()
     finish = State()
     commit = State()
+
+
+class Sending(StatesGroup):
+    choose = State()
+    all = State()
+    all_edit_start = State()
+    all_edited = State()
+    birthday = State()
+    birthday_edit_start = State()
+    birthday_edited = State()
