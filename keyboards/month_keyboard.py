@@ -8,4 +8,5 @@ def month_keyboard() -> ReplyKeyboardMarkup:
     for month in months:
         keyboard.button(text=month)
     keyboard.adjust(3)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True,
+                              one_time_keyboard=True)
