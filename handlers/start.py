@@ -34,6 +34,7 @@ async def client(message: Message, state: FSMContext):
     Start.client
 )
 async def client_check_finish(message: Message, state: FSMContext):
+    db.connect(reuse_if_open=True)
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
@@ -59,6 +60,7 @@ async def consultant(message: Message, state: FSMContext):
     Start.consultant
 )
 async def consultant_check_finish(message: Message, state: FSMContext):
+    db.connect(reuse_if_open=True)
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
