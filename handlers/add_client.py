@@ -9,7 +9,7 @@ from states import AddClient
 from keyboards.month_keyboard import month_keyboard
 from keyboards.day_keyboard import day_keyboard
 from keyboards.check_client_keyboard import check_client_keyboard
-from keyboards.main_menu_keyboard import main_menu_keyboard
+from handlers.menu import main_menu
 router = Router()
 
 
@@ -75,8 +75,7 @@ async def commit(message: Message, state: FSMContext):
                   name=client['name'],
                   phone=client['phone'],
                   date=date(1980, client['month'], int(client['day'])))
-    await message.answer("Это главное меню. Выберете, что хотите сделать?",
-                         reply_markup=main_menu_keyboard())
+    await main_menu(message=message)
     await state.clear()
 
 

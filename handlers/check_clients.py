@@ -5,9 +5,9 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 from states import CheckBase
-from keyboards.main_menu_keyboard import main_menu_keyboard
 from keyboards.check_clients_keyboard import check_clients_keyboard
 from misc.utils import phone_parse, create_clients_list
+from handlers.menu import main_menu
 router = Router()
 
 
@@ -29,8 +29,7 @@ async def check_base(message: Message, state: FSMContext):
 )
 async def all_ok(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Это главное меню",
-                         reply_markup=main_menu_keyboard())
+    await main_menu(message=message)
 
 
 @router.message(

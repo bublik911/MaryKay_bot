@@ -7,10 +7,10 @@ from aiogram.types import Message
 from misc import env
 from misc.utils import create_send_list
 from states import Sending
-from keyboards.main_menu_keyboard import main_menu_keyboard
 from keyboards.send_type_keyboard import send_type_keyboard
 from keyboards.all_type_check_keyboard import send_all_type_keyboard
 from keyboards.birthday_type_check_keyboard import send_birthday_type_keyboard
+from handlers.menu import main_menu
 bot = Bot(token=env.TgKeys.TOKEN)
 router = Router()
 
@@ -51,8 +51,7 @@ async def send(message: Message, state: FSMContext):
         await bot.send_message(chat_id=client[0], text=text)
     await message.answer("Рассылка произведена")
     await state.clear()
-    await message.answer("Что вы хотите сделать?",
-                         reply_markup=main_menu_keyboard())
+    await main_menu(message=message)
 
 
 @router.message(
@@ -95,8 +94,7 @@ async def birthday_send(message: Message, state: FSMContext):
 )
 async def commit(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Что вы хотите сделать?",
-                         reply_markup=main_menu_keyboard())
+    await main_menu(message=message)
 
 
 @router.message(
