@@ -9,7 +9,6 @@ router = Router()
 
 @router.message(Command("menu"))
 async def main_menu(message: Message):
-    db.connect(reuse_if_open=True)
     await message.answer("Что вы хотите сделать?",
                          reply_markup=main_menu_keyboard())
     # router.include_routers(check_clients.router, add_client.router)

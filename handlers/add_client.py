@@ -70,11 +70,13 @@ async def add_client_day(message: Message, state: FSMContext):
 )
 async def commit(message: Message, state: FSMContext):
     client = await state.get_data()
+    db.connect(reuse_if_open=True)
     pid = Consultant.select(Consultant.id).where(Consultant.chat_id == message.chat.id).get()
     Client.create(pid=pid,
                   name=client['name'],
                   phone=client['phone'],
                   date=date(1980, client['month'], int(client['day'])))
+    db.close()
     await main_menu(message=message)
     await state.clear()
 

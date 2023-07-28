@@ -50,7 +50,9 @@ async def delete(message: Message, state: FSMContext):
     CheckBase.delete
 )
 async def delete_commit(message: Message, state: FSMContext):
+    db.connect(reuse_if_open=True)
     Client.update(deleted_at=date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
+    db.close()
     await state.set_state(CheckBase.check)
     await message.answer("Клиент удален. Это обновленный список клиентов")
     await message.answer("\n".join(create_clients_list(message)),

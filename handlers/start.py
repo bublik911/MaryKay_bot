@@ -34,18 +34,20 @@ async def client(message: Message, state: FSMContext):
     Start.client
 )
 async def client_check_finish(message: Message, state: FSMContext):
-    db.connect(reuse_if_open=True)
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
+        db.connect(reuse_if_open=True)
         if Client.select().where(Client.phone == phone_parse(message.text)).count() == 0:
             await message.answer("Вашего номера нет в базе клиентов.\n"
                                  "Обратитесь к своему консультанту или администратору, чтобы вас добавили в базу",
                                  reply_markup=url_admin_keyboard())
+            db.close()
         else:
             Client.update(chat_id=message.chat.id).where(Client.phone == phone_parse(message.text)).execute()
             await message.answer("Отлично! Теперь вы будете получать информацию от своего консультанта!")
             await state.clear()
+            db.close()
 
 
 @router.message(
@@ -64,13 +66,16 @@ async def consultant_check_finish(message: Message, state: FSMContext):
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
+        db.connect(reuse_if_open=True)
         if Consultant.select().where(Consultant.phone == phone_parse(message.text)).count() == 0:
             await message.answer("Вашего номера нет в базе консультантов.\n"
                                  "Обратитесь к администратору, чтобы вас добавили в базу",
                                  reply_markup=url_admin_keyboard())
+            db.close()
         else:
             Consultant.update(chat_id=message.chat.id).where(Consultant.phone == phone_parse(message.text)).execute()
             await message.answer("Что вы хотите сделать?", reply_markup=main_menu_keyboard())
             await state.clear()
-    router.include_routers(check_clients.router, add_client.router, sending.router)
+            db.close()
+    # router.include_routers(check_clients.router, add_client.router, sending.router)
 
