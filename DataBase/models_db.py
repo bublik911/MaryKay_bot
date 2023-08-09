@@ -1,12 +1,15 @@
 from peewee import *
+from playhouse.pool import PooledMySQLDatabase
 
-db = MySQLDatabase(
+db = PooledMySQLDatabase(
     host='127.0.0.1',
     user='user',
     password='Root767!',
-    database='mk'
+    database='mk',
+    timeout=0,
+    charset='utf8mb4'
 )
-db.connect()
+# db.connect()
 
 
 class Consultant(Model):
@@ -37,4 +40,4 @@ class Client(Model):
 
 Consultant.create_table()
 Client.create_table()
-db.close()
+# db.close()
