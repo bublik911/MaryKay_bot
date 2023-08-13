@@ -16,7 +16,7 @@ router = Router()
 
 
 @router.message(
-    Text("✉Рассылка")
+    Text("✉ Рассылка")
 )
 async def sending_start(message: Message, state: FSMContext):
     await message.answer("Параметры какой рассылки вы хотите задать?",
@@ -25,7 +25,7 @@ async def sending_start(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Рассылка всем"),
+    Text("✉️ Рассылка всем"),
     Sending.choose
 )
 @router.message(
@@ -43,7 +43,7 @@ async def all_send(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Отправить"),
+    Text("📨 Отправить"),
     Sending.all
 )
 async def send(message: Message, state: FSMContext):
@@ -52,14 +52,15 @@ async def send(message: Message, state: FSMContext):
     for client in create_send_list(message):
         await bot.send_message(chat_id=client[0], text=f"Здравствуйте, {client[1]}!")
         await bot.send_message(chat_id=client[0], text=text)
-    await message.answer("Рассылка произведена")
+    await message.answer("Рассылка произведена:")
+    await message.answer("\n".join(str(cli[1]) for cli in create_send_list(message)))
     db.close()
     await state.clear()
     await main_menu(message=message)
 
 
 @router.message(
-    Text("Изменить"),
+    Text("🔄 Изменить"),
     Sending.all
 )
 async def edit_start(message: Message, state: FSMContext):
@@ -79,7 +80,7 @@ async def edit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Рассылка ко дню рождения"),
+    Text("🎁 Рассылка ко дню рождения"),
     Sending.choose
 )
 @router.message(
@@ -97,7 +98,7 @@ async def birthday_send(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Отлично"),
+    Text("✅ Отлично"),
     Sending.birthday
 )
 async def commit(message: Message, state: FSMContext):
@@ -106,7 +107,7 @@ async def commit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Изменить"),
+    Text("🔄 Изменить"),
     Sending.birthday
 )
 async def birthday_edit_start(message: Message, state: FSMContext):

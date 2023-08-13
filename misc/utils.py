@@ -3,6 +3,7 @@ from aiogram.types import Message
 from datetime import date
 from aiogram import Bot
 months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+response_months = ["Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"]
 
 
 def phone_parse(x) -> str:
@@ -26,6 +27,11 @@ def month_to_date(month) -> int or bool:
     return False
 
 
+def date_to_month(data) -> str:
+    if int(data) >= 1 and int(data) <= 12:
+        return response_months[int(data) - 1]
+
+
 def create_clients_list(message: Message) -> list:
     db.connect(reuse_if_open=True)
     pid = Consultant.get(Consultant.chat_id == message.chat.id).id
@@ -36,8 +42,10 @@ def create_clients_list(message: Message) -> list:
     for client in clients:
         k += 1
         month, day = str(client.date).split("-")[1:]
-        response.append(f"{k} {client.name} {month}-{day}\n"
-                        f" +7{client.phone}")
+        response.append(f"{k}| {client.name}\n"
+                        f"  | {day} {date_to_month(month)}\n"
+                        f"  | +7{client.phone}\n"
+                        f"  |____________________")
     return response
 
 

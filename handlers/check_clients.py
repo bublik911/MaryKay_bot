@@ -12,7 +12,7 @@ router = Router()
 
 
 @router.message(
-    Text("📕Проверить клиентскую базу")
+    Text("📕 Проверить клиентскую базу")
 )
 async def check_base(message: Message, state: FSMContext):
     await state.set_state(CheckBase.start)
@@ -21,7 +21,7 @@ async def check_base(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Всё верно"),
+    Text("✅ Всё верно"),
     CheckBase.start
 )
 @router.message(
@@ -33,11 +33,11 @@ async def all_ok(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Удалить клиента из базы"),
+    Text("🗑 Удалить клиента из базы"),
     CheckBase.start
 )
 @router.message(
-    Text("Удалить клиента из базы"),
+    Text("🗑 Удалить клиента из базы"),
     CheckBase.check
 )
 async def delete(message: Message, state: FSMContext):
@@ -51,9 +51,15 @@ async def delete(message: Message, state: FSMContext):
 )
 async def delete_commit(message: Message, state: FSMContext):
     db.connect(reuse_if_open=True)
-    Client.update(deleted_at=date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
+    response = Client.update(deleted_at=date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
     db.close()
+    if response == 0:
+        await message.answer("Такого клиента не существует, проверьте список, пожалуйста")
+        await message.answer("\n".join(create_clients_list(message)),
+                             reply_markup=check_clients_keyboard())
+    else:
+        await message.answer("Клиент удален. Это обновленный список клиентов")
+        await message.answer("\n".join(create_clients_list(message)),
+                             reply_markup=check_clients_keyboard())
     await state.set_state(CheckBase.check)
-    await message.answer("Клиент удален. Это обновленный список клиентов")
-    await message.answer("\n".join(create_clients_list(message)),
-                         reply_markup=check_clients_keyboard())
+

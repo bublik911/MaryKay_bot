@@ -14,7 +14,7 @@ router = Router()
 
 
 @router.message(
-    Text("✏Добавить клиента")
+    Text("✏ Добавить клиента")
 )
 async def start(message: Message, state: FSMContext):
     await message.answer("Введите имя клиента")
@@ -66,7 +66,7 @@ async def add_client_day(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text("Да")
+    Text("✅ Да")
 )
 async def commit(message: Message, state: FSMContext):
     client = await state.get_data()
@@ -83,7 +83,7 @@ async def commit(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text("Заполнить заново")
+    Text("🔄 Заполнить заново")
 )
 async def again(message: Message, state: FSMContext):
     await state.clear()
