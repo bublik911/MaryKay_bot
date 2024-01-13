@@ -1,5 +1,5 @@
 from datetime import date
-from DataBase.models_db import *
+from DataBase.config import *
 from aiogram import Router
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Text
@@ -8,6 +8,8 @@ from states import CheckBase
 from keyboards.check_clients_keyboard import check_clients_keyboard
 from misc.utils import phone_parse, create_clients_list
 from handlers.menu import main_menu
+
+from DataBase.repositories import ClientRepository
 router = Router()
 
 
@@ -50,9 +52,7 @@ async def delete(message: Message, state: FSMContext):
     CheckBase.delete
 )
 async def delete_commit(message: Message, state: FSMContext):
-    db.connect(reuse_if_open=True)
-    response = Client.update(deleted_at=date.today()).where((Client.phone == phone_parse(message.text)) & (Client.deleted_at.is_null())).execute()
-    db.close()
+    response = ClientRepository.delete_client(phone_parse(message.text))
     if response == 0:
         await message.answer("Такого клиента не существует, проверьте список, пожалуйста")
         await message.answer("\n".join(create_clients_list(message)),

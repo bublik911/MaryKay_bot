@@ -1,0 +1,32 @@
+import datetime
+
+from aiogram.fsm.context import FSMContext
+
+from DataBase.models.ClientModel import Client
+from DataBase.utils import connect
+
+
+@connect
+async def create_client(state: FSMContext, pid: int):
+    client = await state.get_data()
+    Client.create(pid=pid,
+                  name=client['name'],
+                  phone=client['phone'],
+                  date=datetime.date(1980, client['month'], int(client['day'])))
+    await state.clear()
+
+
+@connect
+def delete_client(phone: str) -> int:
+    return Client.update(deleted_at=datetime.date.today()).where((Client.phone == phone) &
+                                                 (Client.deleted_at.is_null())).execute()
+
+
+@connect
+def count_clients_by_phone(phone: str) -> int:
+    return Client.select().where(Client.phone == phone).count()
+
+
+@connect
+def update_client_chat_id_by_phone(chat_id: int, phone: str):
+    Client.update(chat_id=chat_id).where(Client.phone == phone).execute()
