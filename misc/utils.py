@@ -1,4 +1,4 @@
-from DataBase.models_db import *
+from DataBase.config import *
 from aiogram.types import Message
 from datetime import date
 from aiogram import Bot

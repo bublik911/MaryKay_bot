@@ -1,5 +1,3 @@
-from datetime import date
-from DataBase.models_db import *
 from aiogram import Router
 from misc.utils import phone_parse, month_to_date
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -10,6 +8,9 @@ from keyboards.month_keyboard import month_keyboard
 from keyboards.day_keyboard import day_keyboard
 from keyboards.check_client_keyboard import check_client_keyboard
 from handlers.menu import main_menu
+
+from DataBase.repositories import ClientRepository, ConsultantRepository
+
 router = Router()
 
 
@@ -69,16 +70,9 @@ async def add_client_day(message: Message, state: FSMContext):
     Text("✅ Да")
 )
 async def commit(message: Message, state: FSMContext):
-    client = await state.get_data()
-    db.connect(reuse_if_open=True)
-    pid = Consultant.select(Consultant.id).where(Consultant.chat_id == message.chat.id).get()
-    Client.create(pid=pid,
-                  name=client['name'],
-                  phone=client['phone'],
-                  date=date(1980, client['month'], int(client['day'])))
-    db.close()
+    pid = ConsultantRepository.get_consultant_id_by_chat_id(Message.chat.id)
+    await ClientRepository.create_client(state, pid)
     await main_menu(message=message)
-    await state.clear()
 
 
 @router.message(

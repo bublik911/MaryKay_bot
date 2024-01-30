@@ -1,4 +1,4 @@
-from DataBase.models_db import *
+from DataBase.config import *
 from aiogram import Bot
 from aiogram import Router
 from aiogram.fsm.context import FSMContext

@@ -1,4 +1,4 @@
-from DataBase.models_db import *
+from DataBase.config import *
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command, Text
@@ -9,6 +9,8 @@ from keyboards.main_menu_keyboard import main_menu_keyboard
 from states import Start
 from handlers import add_client, check_clients, sending
 from misc.utils import phone_parse
+
+from DataBase.repositories import ConsultantRepository, ClientRepository
 router = Router()
 
 
@@ -37,17 +39,14 @@ async def client_check_finish(message: Message, state: FSMContext):
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
-        db.connect(reuse_if_open=True)
-        if Client.select().where(Client.phone == phone_parse(message.text)).count() == 0:
+        if ClientRepository.count_clients_by_phone(phone_parse(message.text)) == 0:
             await message.answer("Вашего номера нет в базе клиентов.\n"
                                  "Обратитесь к своему консультанту или администратору, чтобы вас добавили в базу",
                                  reply_markup=url_admin_keyboard())
-            db.close()
         else:
-            Client.update(chat_id=message.chat.id).where(Client.phone == phone_parse(message.text)).execute()
+            ClientRepository.update_client_chat_id_by_phone(message.chat.id, phone_parse(message.text))
             await message.answer("Отлично! Теперь вы будете получать информацию от своего консультанта!")
             await state.clear()
-            db.close()
 
 
 @router.message(
@@ -62,20 +61,16 @@ async def consultant(message: Message, state: FSMContext):
     Start.consultant
 )
 async def consultant_check_finish(message: Message, state: FSMContext):
-    db.connect(reuse_if_open=True)
     if len(phone_parse(message.text)) < 10:
         await message.answer("Введите корректный номер. Например: 8-(777)-777-77-77")
     else:
-        db.connect(reuse_if_open=True)
-        if Consultant.select().where(Consultant.phone == phone_parse(message.text)).count() == 0:
+        if ConsultantRepository.count_consultants_by_phone(phone_parse(message.text)) == 0:
             await message.answer("Вашего номера нет в базе консультантов.\n"
                                  "Обратитесь к администратору, чтобы вас добавили в базу",
                                  reply_markup=url_admin_keyboard())
-            db.close()
         else:
-            Consultant.update(chat_id=message.chat.id).where(Consultant.phone == phone_parse(message.text)).execute()
+            ConsultantRepository.update_consultant_chat_id_by_phone(message.chat.id, phone_parse(message.text))
             await message.answer("Что вы хотите сделать?", reply_markup=main_menu_keyboard())
             await state.clear()
-            db.close()
     # router.include_routers(check_clients.router, add_client.router, sending.router)
 
