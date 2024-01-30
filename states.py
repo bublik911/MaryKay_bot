@@ -1,19 +1,20 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class Start(StatesGroup):
+class Transition(StatesGroup):
+    transition = State()
+
+
+class Start(Transition):
     client = State()
     consultant = State()
 
 
-class CheckBase(StatesGroup):
-    start = State()
-    ok = State()
-    delete = State()
-    check = State()
+class CheckBase(Transition):
+    waiting = State()
 
 
-class AddClient(StatesGroup):
+class AddClient(Transition):
     name = State()
     phone = State()
     month = State()
@@ -22,7 +23,16 @@ class AddClient(StatesGroup):
     commit = State()
 
 
-class Sending(StatesGroup):
+class DeleteClient(Transition):
+    confirm = State()
+    commit = State()
+
+
+class Menu(Transition):
+    waiting = State()
+
+
+class Sending(Transition):
     choose = State()
     all = State()
     all_edit_start = State()
