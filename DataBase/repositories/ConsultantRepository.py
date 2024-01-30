@@ -17,3 +17,4 @@ def count_consultants_by_phone(phone: str) -> int:
 @connect
 def update_consultant_chat_id_by_phone(chat_id: int, phone: str):
     Consultant.update(chat_id=chat_id).where(Consultant.phone == phone).execute()
+
