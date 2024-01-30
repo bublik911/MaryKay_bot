@@ -12,6 +12,7 @@ apscheduler = "^3.10.1"
 peewee = "^3.16.2"
 aiomysql = "^0.2.0"
 cryptography = "^41.0.7"
+prettytable = "^3.9.0"
 
 
 [build-system]
