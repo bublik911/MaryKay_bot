@@ -14,3 +14,5 @@ class Consultant(Model):
     class Meta:
         db_table = 'consultants'
         database = db
+
+Consultant.create_table()

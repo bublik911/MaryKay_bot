@@ -15,3 +15,5 @@ class Client(Model):
     class Meta:
         db_table = 'client'
         database = db
+
+Client.create_table()

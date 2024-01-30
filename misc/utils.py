@@ -2,8 +2,7 @@ from DataBase.config import *
 from aiogram.types import Message
 from datetime import date
 from aiogram import Bot
-months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-response_months = ["Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"]
+from misc.consts import months, response_months
 
 
 def phone_parse(x) -> str:
@@ -32,21 +31,7 @@ def date_to_month(data) -> str:
         return response_months[int(data) - 1]
 
 
-def create_clients_list(message: Message) -> list:
-    db.connect(reuse_if_open=True)
-    pid = Consultant.get(Consultant.chat_id == message.chat.id).id
-    clients = Client.select().where((Client.pid == pid) & (Client.deleted_at.is_null()))
-    db.close()
-    response = []
-    k = 0
-    for client in clients:
-        k += 1
-        month, day = str(client.date).split("-")[1:]
-        response.append(f"{k}| {client.name}\n"
-                        f"  | {day} {date_to_month(month)}\n"
-                        f"  | +7{client.phone}\n"
-                        f"  |____________________")
-    return response
+
 
 
 def create_send_list(message: Message) -> list:

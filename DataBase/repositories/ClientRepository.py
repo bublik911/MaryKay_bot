@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from DataBase.models.ClientModel import Client
 from DataBase.utils import connect
 
+from typing import NoReturn
 
 @connect
 async def create_client(state: FSMContext, pid: int):
@@ -30,3 +31,21 @@ def count_clients_by_phone(phone: str) -> int:
 @connect
 def update_client_chat_id_by_phone(chat_id: int, phone: str):
     Client.update(chat_id=chat_id).where(Client.phone == phone).execute()
+
+
+@connect
+def get_clients_list_by_pid(pid: int) -> list:
+    clients = Client.select().where((Client.pid == pid) & (Client.deleted_at.is_null()))
+    return clients
+
+
+@connect
+def get_id_by_phone_number(phone_number: str) -> int:
+    return Client.get(Client.phone == phone_number[-10:]).id
+
+
+@connect
+def delete_by_id(id: int) -> NoReturn:
+    today = datetime.date.today()
+    Client.update(deleted_at=today).where(Client.id == id).execute()
+

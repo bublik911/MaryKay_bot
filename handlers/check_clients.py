@@ -1,65 +1,70 @@
-from datetime import date
-from DataBase.config import *
+import prettytable
+import handlers
+
 from aiogram import Router
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.types import Message
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
-from states import CheckBase
-from keyboards.check_clients_keyboard import check_clients_keyboard
-from misc.utils import phone_parse, create_clients_list
-from handlers.menu import main_menu
 
 from DataBase.repositories import ClientRepository
+from DataBase.repositories import ConsultantRepository
+
+from states import CheckBase, DeleteClient, Menu, AddClient
+
+from keyboards.check_clients_keyboard import check_clients_keyboard
+
+from misc.consts import CHECK_CLIENTS_BASE, ALL_OK, DELETE_CLIENT, ADD_CLIENT
+from misc.utils import date_to_month
+
+
 router = Router()
 
 
 @router.message(
-    Text("📕 Проверить клиентскую базу")
+    Text(CHECK_CLIENTS_BASE)
+)
+@router.message(
+    CheckBase.transition
 )
 async def check_base(message: Message, state: FSMContext):
-    await state.set_state(CheckBase.start)
-    await message.answer("\n".join(create_clients_list(message)),
-                         reply_markup=check_clients_keyboard())
-
-
-@router.message(
-    Text("✅ Всё верно"),
-    CheckBase.start
-)
-@router.message(
-    CheckBase.check
-)
-async def all_ok(message: Message, state: FSMContext):
     await state.clear()
-    await main_menu(message=message)
+    pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
+    clients = ClientRepository.get_clients_list_by_pid(pid)
 
-
-@router.message(
-    Text("🗑 Удалить клиента из базы"),
-    CheckBase.start
-)
-@router.message(
-    Text("🗑 Удалить клиента из базы"),
-    CheckBase.check
-)
-async def delete(message: Message, state: FSMContext):
-    await state.set_state(CheckBase.delete)
-    await message.answer("Введите номер телефона клиента, которого хотите удалить",
-                         reply_markup=ReplyKeyboardRemove())
-
-
-@router.message(
-    CheckBase.delete
-)
-async def delete_commit(message: Message, state: FSMContext):
-    response = ClientRepository.delete_client(phone_parse(message.text))
-    if response == 0:
-        await message.answer("Такого клиента не существует, проверьте список, пожалуйста")
-        await message.answer("\n".join(create_clients_list(message)),
-                             reply_markup=check_clients_keyboard())
+    table = prettytable.PrettyTable()
+    table.field_names = ["№", "Данные о клиенте"]
+    table.align = 'c'
+    i = 1
+    for client in clients:
+        table.add_row([i, client.name + "\n" +
+                       "+7" + client.phone + "\n" +
+                       str(client.date.day) + " " + date_to_month(client.date.month)])
+        i += 1
+    if len(table.rows) == 0:
+        await message.answer("Таблица пуста")
     else:
-        await message.answer("Клиент удален. Это обновленный список клиентов")
-        await message.answer("\n".join(create_clients_list(message)),
+        await message.answer(f"```{table}```",
+                             parse_mode=ParseMode.MARKDOWN_V2)
+        await message.answer("Всё верно?",
                              reply_markup=check_clients_keyboard())
-    await state.set_state(CheckBase.check)
+    await state.set_state(CheckBase.waiting)
+
+
+@router.message(
+    CheckBase.waiting
+)
+async def answer_routing(message: Message, state: FSMContext):
+    if message.text == ALL_OK:
+        await state.set_state(Menu.transition)
+        await handlers.menu.main_menu(message, state)
+
+    elif message.text == DELETE_CLIENT:
+        await state.set_state(DeleteClient.transition)
+        await handlers.delete_client.start(message, state)
+
+    elif message.text == ADD_CLIENT:
+        await state.set_state(AddClient.transition)
+        await handlers.add_client.start(message, state)
+
 

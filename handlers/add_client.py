@@ -70,9 +70,9 @@ async def add_client_day(message: Message, state: FSMContext):
     Text("✅ Да")
 )
 async def commit(message: Message, state: FSMContext):
-    pid = ConsultantRepository.get_consultant_id_by_chat_id(Message.chat.id)
+    pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     await ClientRepository.create_client(state, pid)
-    await main_menu(message=message)
+    await main_menu(message, state)
 
 
 @router.message(
