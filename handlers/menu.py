@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from DataBase.models_db import db
+from DataBase.config import db
 from keyboards.main_menu_keyboard import main_menu_keyboard
 # from handlers import add_client, check_clients
 router = Router()
