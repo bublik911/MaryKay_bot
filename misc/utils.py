@@ -42,10 +42,8 @@ def date_to_month(data) -> str:
 
 
 def create_send_list(message: Message) -> list:
-    db.connect(reuse_if_open=True)
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     clients = ClientRepository.get_clients_list_by_pid_chat_id(pid)
-    db.close()
     response = []
     for client in clients:
         response.append([client.chat_id, client.name])
