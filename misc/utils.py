@@ -2,7 +2,14 @@ from DataBase.config import *
 from aiogram.types import Message
 from datetime import date
 from aiogram import Bot
-from misc.consts import months, response_months
+from misc.consts import months, response_months, days_in_month
+
+
+def month_len(month: str) -> int:
+    if month in days_in_month:
+        return days_in_month.get(month)
+    else:
+        return 31
 
 
 def phone_parse(x) -> str:

@@ -1,24 +1,18 @@
-import prettytable
 import handlers
 
 from aiogram import Router
-from aiogram.enums.parse_mode import ParseMode
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
-
 
 from DataBase.repositories import ClientRepository
 from DataBase.repositories import ConsultantRepository
 
-from handlers import add_client
-
-from states import CheckBase, DeleteClient, Menu
+from states import CheckBase, DeleteClient
 
 from keyboards.yes_no_keyboard import yes_no_keyboard
 
-from misc.utils import phone_parse
-from misc.consts import CHECK_CLIENTS_BASE, ALL_OK, DELETE_CLIENT, ADD_CLIENT
+from misc.consts import DELETE_CLIENT
 
 router = Router()
 
