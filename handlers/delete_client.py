@@ -34,7 +34,7 @@ async def confirm(message: Message, state: FSMContext):
     number = message.text
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     clients = ClientRepository.get_clients_list_by_pid(pid)
-
+    await state.update_data(number=int(number))
     i = 1
     for client in clients:
         if int(number) == i:
@@ -50,7 +50,8 @@ async def confirm(message: Message, state: FSMContext):
     DeleteClient.commit
 )
 async def delete_commit(message: Message, state: FSMContext):
-    number = message.text
+    data = await state.get_data()
+    number = data['number']
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     clients = ClientRepository.get_clients_list_by_pid(pid)
 
