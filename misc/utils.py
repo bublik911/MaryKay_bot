@@ -1,8 +1,11 @@
-from DataBase.config import *
-from aiogram.types import Message
 from datetime import date
+
 from aiogram import Bot
+from aiogram.types import Message
+
 from misc.consts import months, response_months, days_in_month
+
+from DataBase.repositories import ConsultantRepository, ClientRepository
 
 
 def month_len(month: str) -> int:
@@ -38,15 +41,10 @@ def date_to_month(data) -> str:
         return response_months[int(data) - 1]
 
 
-
-
-
 def create_send_list(message: Message) -> list:
     db.connect(reuse_if_open=True)
-    pid = Consultant.get(Consultant.chat_id == message.chat.id).id
-    clients = Client.select().where((Client.pid == pid) &
-                                    (Client.deleted_at.is_null()) &
-                                    (Client.chat_id.is_null(False)))
+    pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
+    clients = ClientRepository.get_clients_list_by_pid_chat_id(pid)
     db.close()
     response = []
     for client in clients:
@@ -55,20 +53,18 @@ def create_send_list(message: Message) -> list:
 
 
 async def birthday_sending(bot: Bot):
-    db.connect(reuse_if_open=True)
-    consultants = Consultant.select(Consultant.id, Consultant.chat_id, Consultant.birthday_message)
+    consultants = ConsultantRepository.get_id_chat_id_birthday_message()
     for consultant in consultants:
-        clients = Client.select().where((Client.pid == 1) &
-                                        (Client.deleted_at.is_null()) &
-                                        (Client.chat_id.is_null(False)))
+        clients = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id)
+
         for client in clients:
             date_birth_month = client.date.month
             date_birth_day = client.date.day
             today_month = date.today().month
             today_day = date.today().day
+
             if today_month == date_birth_month and date_birth_day - today_day == 3:
                 await bot.send_message(client.chat_id, f"{client.name}!")
                 await bot.send_message(client.chat_id, consultant.birthday_message)
                 await bot.send_message(consultant.chat_id, f"Поздравление с днем рождения послано \n{client.name}\n"
                                                            f"+7{client.phone}")
-    db.close()
