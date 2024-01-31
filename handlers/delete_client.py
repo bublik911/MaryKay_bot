@@ -39,7 +39,7 @@ async def confirm(message: Message, state: FSMContext):
     for client in clients:
         if int(number) == i:
             phone_number = client.phone
-            id = ClientRepository.get_id_by_phone_number(phone_number)
+            id = ClientRepository.get_id_by_phone_number_and_pid(phone_number, pid)
             await message.answer(f"Удалить клиента {client.name}?",
                                  reply_markup=yes_no_keyboard())
     await state.set_state(DeleteClient.commit)
@@ -59,7 +59,7 @@ async def delete_commit(message: Message, state: FSMContext):
     for client in clients:
         if int(number) == i:
             phone_number = client.phone
-            id = ClientRepository.get_id_by_phone_number(phone_number)
+            id = ClientRepository.get_id_by_phone_number_and_pid(phone_number, pid)
             await message.answer(f"Клиент {client.name} удален")
             ClientRepository.delete_by_id(id)
             break
