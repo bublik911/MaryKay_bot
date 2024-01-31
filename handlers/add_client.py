@@ -1,21 +1,27 @@
+import handlers
+
 from aiogram import Router
-from misc.utils import phone_parse, month_to_date
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
-from states import AddClient
+
 from keyboards.month_keyboard import month_keyboard
 from keyboards.day_keyboard import day_keyboard
 from keyboards.check_client_keyboard import check_client_keyboard
-from handlers.menu import main_menu
+
+from states import AddClient
 
 from DataBase.repositories import ClientRepository, ConsultantRepository
+
+from misc.utils import phone_parse, month_to_date
+from misc.consts import ADD_CLIENT
 
 router = Router()
 
 
 @router.message(
-    Text("✏ Добавить клиента")
+    Text(ADD_CLIENT),
+    AddClient.transition
 )
 async def start(message: Message, state: FSMContext):
     await message.answer("Введите имя клиента")
@@ -47,7 +53,7 @@ async def add_client_phone(message: Message, state: FSMContext):
 async def add_client_month(message: Message, state: FSMContext):
     await state.update_data(month=month_to_date(message.text))
     await message.answer("Выберете дату рождения клиента",
-                         reply_markup=day_keyboard())
+                         reply_markup=day_keyboard(message.text))
     await state.set_state(AddClient.day)
 
 
@@ -72,7 +78,7 @@ async def add_client_day(message: Message, state: FSMContext):
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     await ClientRepository.create_client(state, pid)
-    await main_menu(message, state)
+    await handlers.menu.main_menu(message, state)
 
 
 @router.message(
@@ -82,5 +88,4 @@ async def commit(message: Message, state: FSMContext):
 async def again(message: Message, state: FSMContext):
     await state.clear()
     await state.set_state(AddClient.name)
-    await message.answer("Введите имя клиента",
-                         reply_markup=ReplyKeyboardRemove())
+    await start(message, state)
