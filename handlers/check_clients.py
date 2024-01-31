@@ -34,19 +34,20 @@ async def check_base(message: Message, state: FSMContext):
 
     table = prettytable.PrettyTable()
     table.field_names = ["№", "Данные о клиенте"]
-    table.align = 'c'
+    table.align = 'l'
+    table._max_width = {"Данные о клиенте": 40}
     i = 1
     for client in clients:
         table.add_row([i, client.name + "\n" +
                        "+7" + client.phone + "\n" +
-                       str(client.date.day) + " " + date_to_month(client.date.month)])
+                       str(client.date.day) + " " + date_to_month(client.date.month) + "\n"])
         i += 1
     if len(table.rows) == 0:
         await message.answer("Таблица пуста")
         await handlers.menu.main_menu(message, state)
     else:
-        await message.answer(f"```{table}```",
-                             parse_mode=ParseMode.MARKDOWN_V2)
+        await message.answer(f"`{table}`",
+                             parse_mode=ParseMode.MARKDOWN)
         await message.answer("Всё верно?",
                              reply_markup=check_clients_keyboard())
     await state.set_state(CheckBase.waiting)
