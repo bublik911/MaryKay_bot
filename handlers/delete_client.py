@@ -42,6 +42,7 @@ async def confirm(message: Message, state: FSMContext):
             id = ClientRepository.get_id_by_phone_number_and_pid(phone_number, pid)
             await message.answer(f"Удалить клиента {client.name}?",
                                  reply_markup=yes_no_keyboard())
+        i += 1
     await state.set_state(DeleteClient.commit)
 
 
