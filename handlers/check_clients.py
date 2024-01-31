@@ -43,6 +43,7 @@ async def check_base(message: Message, state: FSMContext):
         i += 1
     if len(table.rows) == 0:
         await message.answer("Таблица пуста")
+        await handlers.menu.main_menu(message, state)
     else:
         await message.answer(f"```{table}```",
                              parse_mode=ParseMode.MARKDOWN_V2)
