@@ -40,6 +40,13 @@ def get_clients_list_by_pid(pid: int) -> list:
 
 
 @connect
+def get_clients_list_by_pid_chat_id(pid: int) -> list:
+    return Client.select().where((Client.pid == pid) &
+                                    (Client.deleted_at.is_null()) &
+                                    (Client.chat_id.is_null(False)))
+
+
+@connect
 def get_id_by_phone_number(phone_number: str) -> int:
     return Client.get(Client.phone == phone_number[-10:]).id
 

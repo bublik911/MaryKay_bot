@@ -22,6 +22,11 @@ def get_birthday_message(message: Message) -> str:
 
 
 @connect
+def get_id_chat_id_birthday_message() -> list:
+    return Consultant.select(Consultant.id, Consultant.chat_id, Consultant.birthday_message)
+
+
+@connect
 def count_consultants_by_phone(phone: str) -> int:
     return Consultant.select().where(Consultant.phone == phone).count()
 
