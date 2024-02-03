@@ -16,7 +16,7 @@ response_months = ["Января", "Февраля", "Марта",
 CHECK_CLIENTS_BASE = "📕 Клиенты"
 DELETE_CLIENT = "Удалить"
 ADD_CLIENT = "Добавить"
-ALL_OK = "✅ Всё верно"
+OK_WITH_MARK = "✅ Ок"
 SENDING = "✉ Рассылка"
 
 YES = "Да"
@@ -24,3 +24,12 @@ NO = "Нет"
 
 CLIENT = "Клиент"
 CONSULTANT = "Консультант"
+
+ALL_OK_WITH_MARK = "✅ Всё верно"
+FILL_AGAIN = "🔄 Заполнить заново"
+
+ALL_SENDING = "✉️ Рассылка всем"
+SEND = "📨 Отправить"
+CHANGE = "🔄 Изменить"
+BIRTHDAY_SENDING = "🎁 Рассылка ко дню рождения"
+EXCELLENT = "✅ Отлично"

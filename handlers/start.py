@@ -9,6 +9,7 @@ from keyboards.main_menu_keyboard import main_menu_keyboard
 from states import Start
 from handlers import add_client, check_clients, sending
 from misc.utils import phone_parse
+from misc.consts import CLIENT, CONSULTANT
 
 from DataBase.repositories import ConsultantRepository, ClientRepository
 router = Router()
@@ -25,7 +26,7 @@ async def start_handler(message: Message):
 
 
 @router.message(
-    Text("Клиент")
+    Text(CLIENT)
 )
 async def client(message: Message, state: FSMContext):
     await message.answer("Введите свой номер телефона")
@@ -50,7 +51,7 @@ async def client_check_finish(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Консультант")
+    Text(CONSULTANT)
 )
 async def consultant(message: Message, state: FSMContext):
     await message.answer("Введите свой номер телефона")

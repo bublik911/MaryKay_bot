@@ -13,8 +13,8 @@ from states import AddClient
 
 from DataBase.repositories import ClientRepository, ConsultantRepository
 
-from misc.utils import phone_parse, month_to_date
-from misc.consts import ADD_CLIENT
+from misc.utils import phone_parse, month_to_date, date_to_month, correct_date
+from misc.consts import ADD_CLIENT, ALL_OK_WITH_MARK, FILL_AGAIN
 
 router = Router()
 
@@ -66,14 +66,14 @@ async def add_client_day(message: Message, state: FSMContext):
     await message.answer("Хотите добавить клиента со следующими параметрами?")
     await message.answer(f"Имя: {client['name']}\n"
                          f"Телефон: +7{client['phone']}\n"
-                         f"Дата рождения: {client['month']}-{client['day']}",
+                         f"Дата рождения: {correct_date(client['day'])} {date_to_month(client['month'])}",
                          reply_markup=check_client_keyboard())
     await state.set_state(AddClient.commit)
 
 
 @router.message(
     AddClient.commit,
-    Text("✅ Да")
+    Text(ALL_OK_WITH_MARK)
 )
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
@@ -83,7 +83,7 @@ async def commit(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text("🔄 Заполнить заново")
+    Text(FILL_AGAIN)
 )
 async def again(message: Message, state: FSMContext):
     await state.clear()

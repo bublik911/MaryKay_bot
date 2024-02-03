@@ -7,6 +7,7 @@ from DataBase.utils import connect
 
 from typing import NoReturn
 
+
 @connect
 async def create_client(state: FSMContext, pid: int):
     client = await state.get_data()
