@@ -8,7 +8,7 @@ from aiogram.types import Message
 
 from misc import env
 from misc.utils import create_send_list
-from misc.consts import SENDING
+from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
 
 from DataBase.repositories import ConsultantRepository
 
@@ -34,7 +34,7 @@ async def sending_start(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("✉️ Рассылка всем"),
+    Text(ALL_SENDING),
     Sending.choose
 )
 @router.message(
@@ -50,7 +50,7 @@ async def all_send(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("📨 Отправить"),
+    Text(SEND),
     Sending.all
 )
 async def send(message: Message, state: FSMContext):
@@ -65,7 +65,7 @@ async def send(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("🔄 Изменить"),
+    Text(CHANGE),
     Sending.all
 )
 async def edit_start(message: Message, state: FSMContext):
@@ -83,7 +83,7 @@ async def edit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("🎁 Рассылка ко дню рождения"),
+    Text(BIRTHDAY_SENDING),
     Sending.choose
 )
 @router.message(
@@ -100,7 +100,7 @@ async def birthday_send(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("✅ Отлично"),
+    Text(EXCELLENT),
     Sending.birthday
 )
 async def commit(message: Message, state: FSMContext):
@@ -109,7 +109,7 @@ async def commit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("🔄 Изменить"),
+    Text(CHANGE),
     Sending.birthday
 )
 async def birthday_edit_start(message: Message, state: FSMContext):

@@ -24,3 +24,12 @@ NO = "Нет"
 
 CLIENT = "Клиент"
 CONSULTANT = "Консультант"
+
+YES_WITH_MARK = "✅ Да"
+FILL_AGAIN = "🔄 Заполнить заново"
+
+ALL_SENDING = "✉️ Рассылка всем"
+SEND = "📨 Отправить"
+CHANGE = "🔄 Изменить"
+BIRTHDAY_SENDING = "🎁 Рассылка ко дню рождения"
+EXCELLENT = "✅ Отлично"
