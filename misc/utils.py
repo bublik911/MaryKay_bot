@@ -41,6 +41,12 @@ def date_to_month(data) -> str:
         return response_months[int(data) - 1]
 
 
+def correct_date(data: str) -> str:
+    if int(data) < 10:
+        return "0" + data
+    return data
+
+
 def create_send_list(message: Message) -> list:
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     clients = ClientRepository.get_clients_list_by_pid_chat_id(pid)
