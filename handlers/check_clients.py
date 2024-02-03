@@ -15,7 +15,7 @@ from states import CheckBase, DeleteClient, Menu, AddClient
 from keyboards.check_clients_keyboard import check_clients_keyboard
 
 from misc.consts import CHECK_CLIENTS_BASE, OK_WITH_MARK, DELETE_CLIENT, ADD_CLIENT
-from misc.utils import date_to_month
+from misc.utils import date_to_month, correct_date
 
 
 router = Router()
@@ -40,7 +40,7 @@ async def check_base(message: Message, state: FSMContext):
     for client in clients:
         table.add_row([i, client.name + "\n" +
                        "+7" + client.phone + "\n" +
-                       str(client.date.day) + " " + date_to_month(client.date.month) + "\n"])
+                       correct_date(str(client.date.day)) + " " + date_to_month(client.date.month) + "\n"])
         i += 1
     if len(table.rows) == 0:
         await message.answer("Таблица пуста")
