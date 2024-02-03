@@ -14,7 +14,7 @@ from states import CheckBase, DeleteClient, Menu, AddClient
 
 from keyboards.check_clients_keyboard import check_clients_keyboard
 
-from misc.consts import CHECK_CLIENTS_BASE, ALL_OK, DELETE_CLIENT, ADD_CLIENT
+from misc.consts import CHECK_CLIENTS_BASE, OK_WITH_MARK, DELETE_CLIENT, ADD_CLIENT
 from misc.utils import date_to_month
 
 
@@ -47,8 +47,7 @@ async def check_base(message: Message, state: FSMContext):
         await handlers.menu.main_menu(message, state)
     else:
         await message.answer(f"`{table}`",
-                             parse_mode=ParseMode.MARKDOWN)
-        await message.answer("Всё верно?",
+                             parse_mode=ParseMode.MARKDOWN,
                              reply_markup=check_clients_keyboard())
     await state.set_state(CheckBase.waiting)
 
@@ -57,7 +56,7 @@ async def check_base(message: Message, state: FSMContext):
     CheckBase.waiting
 )
 async def answer_routing(message: Message, state: FSMContext):
-    if message.text == ALL_OK:
+    if message.text == OK_WITH_MARK:
         await state.set_state(Menu.transition)
         await handlers.menu.main_menu(message, state)
 
