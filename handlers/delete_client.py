@@ -12,7 +12,7 @@ from states import CheckBase, DeleteClient
 
 from keyboards.yes_no_keyboard import yes_no_keyboard
 
-from misc.consts import DELETE_CLIENT
+from misc.consts import DELETE_CLIENT, YES, NO
 
 router = Router()
 
@@ -47,7 +47,7 @@ async def confirm(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Да"),
+    Text(YES),
     DeleteClient.commit
 )
 async def delete_commit(message: Message, state: FSMContext):
@@ -71,7 +71,7 @@ async def delete_commit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text("Нет"),
+    Text(NO),
     DeleteClient.commit
 )
 async def return_to_check(message: Message, state: FSMContext):
