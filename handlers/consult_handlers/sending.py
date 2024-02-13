@@ -1,3 +1,5 @@
+import os
+
 import handlers
 
 from aiogram import Bot
@@ -19,7 +21,7 @@ from keyboards.all_type_check_keyboard import send_all_type_keyboard
 from keyboards.birthday_type_check_keyboard import send_birthday_type_keyboard
 
 
-bot = Bot(token=env.TgKeys.TOKEN)
+bot = Bot(token=os.getenv('CONSULT_TOKEN'))
 router = Router()
 
 
