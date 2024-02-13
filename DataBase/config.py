@@ -1,9 +1,12 @@
+import os
+from dotenv import load_dotenv
 from peewee import MySQLDatabase
 
+load_dotenv()
+
 db = MySQLDatabase(
-    host='127.0.0.1',
-    user='user',
-    password='Root767!',
-    database='mk',
-    charset='utf8mb4'
-)
+    host=os.getenv('DB_HOST'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD', default=''),
+    database=os.getenv('DB_NAME'),
+    charset=os.getenv('DB_CHARSET'))

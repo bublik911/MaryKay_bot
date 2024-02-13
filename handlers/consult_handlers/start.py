@@ -1,3 +1,4 @@
+import handlers.consult_handlers
 from DataBase.config import *
 from aiogram import Router
 from aiogram.types import Message
@@ -7,7 +8,7 @@ from keyboards.url_admin_keyboard import url_admin_keyboard
 from keyboards.client_or_consultant import client_or_consultant
 from keyboards.main_menu_keyboard import main_menu_keyboard
 from states import Start
-from handlers import add_client, check_clients, sending
+
 from misc.utils import phone_parse
 from misc.consts import CLIENT, CONSULTANT
 
