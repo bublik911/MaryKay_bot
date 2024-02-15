@@ -6,8 +6,7 @@ class Transition(StatesGroup):
 
 
 class Start(Transition):
-    client = State()
-    consultant = State()
+    waiting = State()
 
 
 class CheckBase(Transition):
