@@ -5,7 +5,7 @@ from aiogram.types import Message
 
 from misc.consts import months, response_months, days_in_month
 
-from DataBase.repositories import ConsultantRepository, ClientRepository
+from db.repositories import ConsultantRepository, ClientRepository
 
 
 def month_len(month: str) -> int:

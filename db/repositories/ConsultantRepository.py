@@ -2,8 +2,8 @@ from aiogram.types import Message
 
 from typing import NoReturn
 
-from DataBase.models.ClientModel import Consultant
-from DataBase.utils import connect
+from db.models.ClientModel import Consultant
+from db.utils import connect
 
 
 @connect

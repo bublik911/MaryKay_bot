@@ -9,7 +9,7 @@ from states import Start
 
 from misc.utils import phone_parse
 
-from DataBase.repositories import ClientRepository
+from db.repositories import ClientRepository
 
 router = Router()
 

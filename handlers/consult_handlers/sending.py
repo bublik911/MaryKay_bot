@@ -8,11 +8,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Text
 from aiogram.types import Message
 
-from misc import env
 from misc.utils import create_send_list
 from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
 
-from DataBase.repositories import ConsultantRepository
+from db.repositories import ConsultantRepository
 
 from states import Sending
 

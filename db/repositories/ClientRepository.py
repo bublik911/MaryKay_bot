@@ -2,8 +2,8 @@ import datetime
 
 from aiogram.fsm.context import FSMContext
 
-from DataBase.models.ClientModel import Client
-from DataBase.utils import connect
+from db.models.ClientModel import Client
+from db.utils import connect
 
 from typing import NoReturn
 

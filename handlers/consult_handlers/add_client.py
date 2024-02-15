@@ -11,7 +11,7 @@ from keyboards.check_client_keyboard import check_client_keyboard
 
 from states import AddClient
 
-from DataBase.repositories import ClientRepository, ConsultantRepository
+from db.repositories import ClientRepository, ConsultantRepository
 
 from misc.utils import phone_parse, month_to_date, date_to_month, correct_date
 from misc.consts import ADD_CLIENT, ALL_OK_WITH_MARK, FILL_AGAIN

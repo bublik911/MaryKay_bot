@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8
+    env_file:
+      - ./.env
+    environment:
+          - MYSQL_ROOT_PASSWORD:rootmysql
+          - MYSQL_USER:user
+          - MYSQL_PASSWORD:mysql
+          - MYSQL_DATABASE:MySQL
+    restart: on-failure
+    ports:
+      - "3306:3306"
+  bot:
+    build: .
+    command: ["./bot_start.sh"]
+    env_file:
+      - ./.env
+    restart: always
+    depends_on:
+      - db

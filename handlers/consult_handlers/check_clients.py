@@ -7,8 +7,8 @@ from aiogram.types import Message
 from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
-from DataBase.repositories import ClientRepository
-from DataBase.repositories import ConsultantRepository
+from db.repositories import ClientRepository
+from db.repositories import ConsultantRepository
 
 from states import CheckBase, DeleteClient, Menu, AddClient
 
