@@ -29,7 +29,7 @@ router = Router()
     Sending.transition
 )
 async def sending_start(message: Message, state: FSMContext):
-    await message.answer("Параметры какой рассылки вы хотите задать?",
+    await message.answer("Сообщение какой рассылки вы хотите задать?",
                          reply_markup=send_type_keyboard())
     await state.set_state(Sending.choose)
 
