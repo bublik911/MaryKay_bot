@@ -1,6 +1,6 @@
 import os
 
-import handlers
+from handlers import consult_handlers
 
 from aiogram import Bot
 from aiogram import Router
@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Text
 from aiogram.types import Message
 
-from misc.utils import create_send_list
+from misc.utils import create_send_list, all_sending
 from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
 
 from db.repositories import ConsultantRepository
@@ -20,7 +20,7 @@ from keyboards.all_type_check_keyboard import send_all_type_keyboard
 from keyboards.birthday_type_check_keyboard import send_birthday_type_keyboard
 
 
-bot = Bot(token=os.getenv('CONSULT_TOKEN'))
+bot = Bot(token=os.getenv('CLIENT_TOKEN'))
 router = Router()
 
 
@@ -56,13 +56,8 @@ async def all_send(message: Message, state: FSMContext):
 )
 async def send(message: Message, state: FSMContext):
     text = ConsultantRepository.get_all_message(message)
-    for client in create_send_list(message):
-        await bot.send_message(chat_id=client[0], text=f"Здравствуйте, {client[1]}!")
-        await bot.send_message(chat_id=client[0], text=text)
-    await message.answer("Рассылка произведена:")
-    await message.answer("\n".join(str(cli[1]) for cli in create_send_list(message)))
-    await state.clear()
-    await handlers.menu.main_menu(message, state)
+    await all_sending(bot, message, text)
+    await consult_handlers.menu.main_menu(message, state)
 
 
 @router.message(
@@ -106,7 +101,7 @@ async def birthday_send(message: Message, state: FSMContext):
 )
 async def commit(message: Message, state: FSMContext):
     await state.clear()
-    await handlers.menu.main_menu(message, state)
+    await consult_handlers.menu.main_menu(message, state)
 
 
 @router.message(

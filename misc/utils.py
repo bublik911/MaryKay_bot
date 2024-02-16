@@ -1,9 +1,15 @@
+import aiogram.exceptions
+import prettytable
+
 from datetime import date
 
 from aiogram import Bot
 from aiogram.types import Message
+from aiogram.enums.parse_mode import ParseMode
 
 from misc.consts import months, response_months, days_in_month
+
+from keyboards.url_admin_keyboard import url_admin_keyboard
 
 from db.repositories import ConsultantRepository, ClientRepository
 
@@ -47,13 +53,40 @@ def correct_date(data: str) -> str:
     return data
 
 
-def create_send_list(message: Message) -> list:
+def create_send_list(message: Message, null_chat_id: bool):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
-    clients = ClientRepository.get_clients_list_by_pid_chat_id(pid)
+    clients = ClientRepository.get_clients_list_by_pid_chat_id(pid, null_chat_id)
     response = []
     for client in clients:
-        response.append([client.chat_id, client.name])
+        response.append(client)
     return response
+
+
+async def all_sending(bot: Bot, message: Message, text: str):
+    send_table = prettytable.PrettyTable()
+    send_table.field_names = ["Имя", "Телефон"]
+    send_table.align = 'l'
+    send_table._max_width = {"Телефон": 50}
+
+    failed = create_send_list(message, True)
+    correct = create_send_list(message, False)
+
+    if len(correct) == 0:
+        await message.answer("Ошибка рассылки. Обратитесь к администратору",
+                             reply_markup=url_admin_keyboard())
+    else:
+        for client in correct:
+            try:
+                await bot.send_message(client.chat_id, text)
+            except aiogram.exceptions.TelegramBadRequest:
+                send_table.add_row([client.name, "+7" + client.phone + "❌" + "\n"])
+                continue
+            send_table.add_row([client.name, "+7" + client.phone + "✅" + "\n"])
+        for client in failed:
+            send_table.add_row([client.name, "+7" + client.phone + "❌" + "\n"])
+
+        await message.answer(f"`{send_table}`",
+                             parse_mode=ParseMode.MARKDOWN)
 
 
 async def birthday_sending(bot: Bot):
