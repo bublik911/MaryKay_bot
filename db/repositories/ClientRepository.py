@@ -42,10 +42,10 @@ def get_clients_list_by_pid(pid: int) -> list:
 
 
 @connect
-def get_clients_list_by_pid_chat_id(pid: int) -> list:
+def get_clients_list_by_pid_chat_id(pid: int, null_chat_id: bool) -> list:
     return Client.select().where((Client.pid == pid) &
                                     (Client.deleted_at.is_null()) &
-                                    (Client.chat_id.is_null(False)))
+                                    (Client.chat_id.is_null(null_chat_id)))
 
 
 @connect
