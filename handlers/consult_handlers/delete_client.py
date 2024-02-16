@@ -1,4 +1,4 @@
-import handlers
+from handlers import consult_handlers
 
 from aiogram import Router
 from aiogram.types import Message
@@ -67,7 +67,7 @@ async def delete_commit(message: Message, state: FSMContext):
         i += 1
     await state.set_state(CheckBase.transition)
     await message.answer("Таблица изменена:")
-    await handlers.check_clients.check_base(message, state)
+    await consult_handlers.check_clients.check_base(message, state)
 
 
 @router.message(
@@ -75,4 +75,4 @@ async def delete_commit(message: Message, state: FSMContext):
     DeleteClient.commit
 )
 async def return_to_check(message: Message, state: FSMContext):
-    await handlers.check_clients.check_base(message, state)
+    await consult_handlers.check_clients.check_base(message, state)

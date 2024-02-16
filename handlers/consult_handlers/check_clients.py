@@ -1,5 +1,5 @@
 import prettytable
-import handlers
+from handlers import consult_handlers
 
 from aiogram import Router
 from aiogram.enums.parse_mode import ParseMode
@@ -44,7 +44,7 @@ async def check_base(message: Message, state: FSMContext):
         i += 1
     if len(table.rows) == 0:
         await message.answer("Таблица пуста")
-        await handlers.menu.main_menu(message, state)
+        await consult_handlers.menu.main_menu(message, state)
     else:
         await message.answer(f"`{table}`",
                              parse_mode=ParseMode.MARKDOWN,
@@ -58,14 +58,14 @@ async def check_base(message: Message, state: FSMContext):
 async def answer_routing(message: Message, state: FSMContext):
     if message.text == OK_WITH_MARK:
         await state.set_state(Menu.transition)
-        await handlers.menu.main_menu(message, state)
+        await consult_handlers.menu.main_menu(message, state)
 
     elif message.text == DELETE_CLIENT:
         await state.set_state(DeleteClient.transition)
-        await handlers.delete_client.start(message, state)
+        await consult_handlers.delete_client.start(message, state)
 
     elif message.text == ADD_CLIENT:
         await state.set_state(AddClient.transition)
-        await handlers.add_client.start(message, state)
+        await consult_handlers.add_client.start(message, state)
 
 

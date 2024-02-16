@@ -1,4 +1,4 @@
-import handlers
+from handlers import consult_handlers
 
 from aiogram import Router
 from aiogram.types import Message
@@ -78,7 +78,7 @@ async def add_client_day(message: Message, state: FSMContext):
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
     await ClientRepository.create_client(state, pid)
-    await handlers.menu.main_menu(message, state)
+    await consult_handlers.menu.main_menu(message, state)
 
 
 @router.message(
