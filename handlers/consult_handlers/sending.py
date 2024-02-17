@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import Text
 from aiogram.types import Message
 
-from misc.utils import create_send_list, all_sending
+from misc.utils import all_sending
 from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
 
 from db.repositories import ConsultantRepository
@@ -64,6 +64,10 @@ async def send(message: Message, state: FSMContext):
     Text(CHANGE),
     Sending.all
 )
+@router.message(
+    Text(CHANGE),
+    Sending.all_edit_start
+)
 async def edit_start(message: Message, state: FSMContext):
     await message.answer("Введите новое сообщение")
     await state.set_state(Sending.all_edit_start)
@@ -107,6 +111,10 @@ async def commit(message: Message, state: FSMContext):
 @router.message(
     Text(CHANGE),
     Sending.birthday
+)
+@router.message(
+    Text(CHANGE),
+    Sending.birthday_edit_start
 )
 async def birthday_edit_start(message: Message, state: FSMContext):
     await message.answer("Введите новое сообщение")
