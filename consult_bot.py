@@ -10,7 +10,8 @@ load_dotenv()
 
 
 async def main():
-    bot = Bot(token=os.getenv('CONSULT_TOKEN'))
+    consult_bot = Bot(token=os.getenv('CONSULT_TOKEN'))
+    client_bot = Bot(token=os.getenv('CLIENT_TOKEN'))
 
     dp = Dispatcher()
     dp.include_routers(start.router, menu.router, help.router,
@@ -18,12 +19,12 @@ async def main():
                        delete_client.router)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(birthday_sending, trigger="cron", hour="10", minute="00", args=(bot,))
+    scheduler.add_job(birthday_sending, trigger="cron", hour="19", minute="05", args=(consult_bot, client_bot, ))
     scheduler.start()
 
-    await bot.delete_webhook(drop_pending_updates=True)
+    await consult_bot.delete_webhook(drop_pending_updates=True)
 
-    await dp.start_polling(bot)
+    await dp.start_polling(consult_bot)
 
 
 if __name__ == "__main__":
