@@ -71,37 +71,66 @@ async def all_sending(bot: Bot, message: Message, text: str):
     failed = create_send_list(message, True)
     correct = create_send_list(message, False)
 
-    if len(correct) == 0:
+    if len(correct) == 0 or len(failed) + len(correct) == 0:
         await message.answer("Ошибка рассылки. Обратитесь к администратору",
                              reply_markup=url_admin_keyboard())
     else:
+
         for client in correct:
             try:
                 await bot.send_message(client.chat_id, text)
             except aiogram.exceptions.TelegramBadRequest:
-                send_table.add_row([client.name, "+7" + client.phone + "❌" + "\n"])
+                send_table.add_row([client.name, "+7" + client.phone + " ❌" + "\n"])
                 continue
-            send_table.add_row([client.name, "+7" + client.phone + "✅" + "\n"])
+            send_table.add_row([client.name, "+7" + client.phone + " ✅" + "\n"])
         for client in failed:
-            send_table.add_row([client.name, "+7" + client.phone + "❌" + "\n"])
+            send_table.add_row([client.name, "+7" + client.phone + " ❌" + "\n"])
 
+        await message.answer("Рассылка совершена:")
         await message.answer(f"`{send_table}`",
                              parse_mode=ParseMode.MARKDOWN)
 
 
-async def birthday_sending(bot: Bot):
+async def birthday_sending(consult_bot: Bot, client_bot: Bot):
+
+    send_table = prettytable.PrettyTable()
+    send_table.field_names = ["Имя", "Дата рождения"]
+    send_table.align = 'r'
+    send_table._max_width = {"Дата рождения": 60}
+
     consultants = ConsultantRepository.get_id_chat_id_birthday_message()
     for consultant in consultants:
-        clients = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id)
 
-        for client in clients:
-            date_birth_month = client.date.month
-            date_birth_day = client.date.day
-            today_month = date.today().month
-            today_day = date.today().day
+        correct = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id, False)
+        failed = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id, True)
 
-            if today_month == date_birth_month and date_birth_day - today_day == 3:
-                await bot.send_message(client.chat_id, f"{client.name}!")
-                await bot.send_message(client.chat_id, consultant.birthday_message)
-                await bot.send_message(consultant.chat_id, f"Поздравление с днем рождения послано \n{client.name}\n"
-                                                           f"+7{client.phone}")
+        if len(correct) == 0 or len(failed) + len(correct) == 0:
+            await consult_bot.send_message(consultant.chat_id, "Ошибка рассылки с поздравлением. "
+                                                               "Обратитесь к администратору",
+                                           reply_markup=url_admin_keyboard())
+        else:
+            for client in correct:
+                date_birth_month = client.date.month
+                date_birth_day = client.date.day
+                today_month = date.today().month
+                today_day = date.today().day
+
+                if today_month == date_birth_month and date_birth_day - today_day == 3:
+                    try:
+                        await client_bot.send_message(client.chat_id, f"{client.name}!" + consultant.birthday_message)
+                    except aiogram.exceptions.TelegramBadRequest:
+                        send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+                        continue
+                    send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ✅" + "\n"])
+
+            for client in failed:
+                date_birth_month = client.date.month
+                date_birth_day = client.date.day
+                today_month = date.today().month
+                today_day = date.today().day
+                if today_month == date_birth_month and date_birth_day - today_day == 3:
+                    send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+
+        await consult_bot.send_message(consultant.chat_id, "Рассылка совершена:")
+        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                       parse_mode=ParseMode.MARKDOWN)
