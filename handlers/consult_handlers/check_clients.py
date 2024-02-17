@@ -49,7 +49,7 @@ async def check_base(message: Message, state: FSMContext):
         await message.answer(f"`{table}`",
                              parse_mode=ParseMode.MARKDOWN,
                              reply_markup=check_clients_keyboard())
-    await state.set_state(CheckBase.waiting)
+        await state.set_state(CheckBase.waiting)
 
 
 @router.message(
