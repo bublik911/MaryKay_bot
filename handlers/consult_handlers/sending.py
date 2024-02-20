@@ -7,6 +7,7 @@ from aiogram import Router
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Text
 from aiogram.types import Message
+from aiogram.enums.parse_mode import ParseMode
 
 from misc.utils import all_sending
 from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
@@ -43,10 +44,11 @@ async def sending_start(message: Message, state: FSMContext):
 )
 async def all_send(message: Message, state: FSMContext):
     text = ConsultantRepository.get_all_message(message)
-    await message.answer("Сейчас сообщение для рассылки всем клиентам выглядит так:\n"
-                         "Здравствуйте, <имя клиента>"
-                         f"{text}",
-                         reply_markup=send_all_type_keyboard())
+    await message.answer("Сейчас сообщение для рассылки всем клиентам выглядит так:\n\n"
+                         "Здравствуйте, <имя клиента>\n"
+                         f"_{text}_",
+                         reply_markup=send_all_type_keyboard(),
+                         parse_mode=ParseMode.MARKDOWN)
     await state.set_state(Sending.all)
 
 
@@ -69,7 +71,7 @@ async def send(message: Message, state: FSMContext):
     Sending.all_edit_start
 )
 async def edit_start(message: Message, state: FSMContext):
-    await message.answer("Введите новое сообщение")
+    await message.answer("Введите текст сообщения")
     await state.set_state(Sending.all_edit_start)
 
 
@@ -91,11 +93,11 @@ async def edit(message: Message, state: FSMContext):
 )
 async def birthday_send(message: Message, state: FSMContext):
     text = ConsultantRepository.get_birthday_message(message)
-    await message.answer("Сейчас сообщение для рассылки клиентам ко дню рождения выглядит так:\n"
-                         "Здравствуйте, <имя клиента>\n"
-                         f"{text}",
-                         reply_markup=send_birthday_type_keyboard())
-
+    await message.answer("Сейчас сообщение для рассылки клиентам ко дню рождения выглядит так:\n\n"
+                         "<Имя клиента>!\n"
+                         f"_{text}_",
+                         reply_markup=send_birthday_type_keyboard(),
+                         parse_mode=ParseMode.MARKDOWN)
     await state.set_state(Sending.birthday)
 
 
@@ -117,7 +119,7 @@ async def commit(message: Message, state: FSMContext):
     Sending.birthday_edit_start
 )
 async def birthday_edit_start(message: Message, state: FSMContext):
-    await message.answer("Введите новое сообщение")
+    await message.answer("Введите текст сообщения")
     await state.set_state(Sending.birthday_edit_start)
 
 
