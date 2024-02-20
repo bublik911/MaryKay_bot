@@ -35,12 +35,16 @@ async def check_base(message: Message, state: FSMContext):
     table = prettytable.PrettyTable()
     table.field_names = ["№", "Данные о клиенте"]
     table.align = 'l'
-    table._max_width = {"Данные о клиенте": 40}
+    table._max_width = {"Данные о клиенте": 25}
     i = 1
     for client in clients:
         table.add_row([i, client.name + "\n" +
                        "+7" + client.phone + "\n" +
                        correct_date(str(client.date.day)) + " " + date_to_month(client.date.month) + "\n"])
+        if i % 10 == 0:
+            await message.answer(f"`{table}`",
+                                 parse_mode=ParseMode.MARKDOWN)
+            table.clear_rows()
         i += 1
     if len(table.rows) == 0:
         await message.answer("Таблица пуста")
