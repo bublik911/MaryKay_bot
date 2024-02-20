@@ -19,7 +19,7 @@ async def main():
                        delete_client.router)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(birthday_sending, trigger="cron", hour="19", minute="05", args=(consult_bot, client_bot, ))
+    scheduler.add_job(birthday_sending, trigger="cron", hour="10", minute="00", args=(consult_bot, client_bot, ))
     scheduler.start()
 
     await consult_bot.delete_webhook(drop_pending_updates=True)
