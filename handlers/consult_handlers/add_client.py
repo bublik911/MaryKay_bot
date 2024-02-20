@@ -77,7 +77,10 @@ async def add_client_day(message: Message, state: FSMContext):
 )
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
-    await ClientRepository.create_client(state, pid)
+    if await ClientRepository.create_client(state, pid):
+        await message.answer("Клиент добавлен")
+    else:
+        await message.answer("Ошибка создания клиента. Такой номер телефона уже зарегистрирован")
     await consult_handlers.menu.main_menu(message, state)
 
 
