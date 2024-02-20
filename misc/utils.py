@@ -10,6 +10,7 @@ from aiogram.enums.parse_mode import ParseMode
 from misc.consts import months, response_months, days_in_month
 
 from keyboards.url_admin_keyboard import url_admin_keyboard
+from keyboards.main_menu_keyboard import main_menu_keyboard
 
 from db.repositories import ConsultantRepository, ClientRepository
 
@@ -66,27 +67,40 @@ async def all_sending(bot: Bot, message: Message, text: str):
     send_table = prettytable.PrettyTable()
     send_table.field_names = ["Имя", "Телефон"]
     send_table.align = 'l'
-    send_table._max_width = {"Телефон": 50}
+    send_table._max_width = {"Имя": 10}
 
     failed = create_send_list(message, True)
     correct = create_send_list(message, False)
 
-    if len(correct) == 0 or len(failed) + len(correct) == 0:
+    if len(correct) == 0:
         await message.answer("Ошибка рассылки. Обратитесь к администратору",
                              reply_markup=url_admin_keyboard())
+    elif len(failed) + len(correct) == 0:
+        await message.answer("Список рассылки пуст.",
+                             reply_markup=url_admin_keyboard())
     else:
-
+        i = 1
+        await message.answer("Рассылка совершена:")
         for client in correct:
+            if i % 10 == 0:
+                await message.answer(f"`{send_table}`",
+                                     parse_mode=ParseMode.MARKDOWN)
+                send_table.clear_rows()
             try:
-                await bot.send_message(client.chat_id, text)
+                await bot.send_message(client.chat_id, f"Здравствуйте! {client.name}\n" + text)
             except aiogram.exceptions.TelegramBadRequest:
                 send_table.add_row([client.name, "+7" + client.phone + " ❌" + "\n"])
+                i += 1
                 continue
             send_table.add_row([client.name, "+7" + client.phone + " ✅" + "\n"])
+            i += 1
         for client in failed:
+            if i % 10 == 0:
+                await message.answer(f"`{send_table}`",
+                                     parse_mode=ParseMode.MARKDOWN)
+                send_table.clear_rows()
             send_table.add_row([client.name, "+7" + client.phone + " ❌" + "\n"])
-
-        await message.answer("Рассылка совершена:")
+            i += 1
         await message.answer(f"`{send_table}`",
                              parse_mode=ParseMode.MARKDOWN)
 
@@ -96,7 +110,7 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
     send_table = prettytable.PrettyTable()
     send_table.field_names = ["Имя", "Дата рождения"]
     send_table.align = 'r'
-    send_table._max_width = {"Дата рождения": 60}
+    send_table._max_width = {"Имя": 25}
 
     consultants = ConsultantRepository.get_id_chat_id_birthday_message()
     for consultant in consultants:
@@ -109,6 +123,7 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                                                                "Обратитесь к администратору",
                                            reply_markup=url_admin_keyboard())
         else:
+            i = 1
             for client in correct:
                 date_birth_month = client.date.month
                 date_birth_day = client.date.day
@@ -116,12 +131,20 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                 today_day = date.today().day
 
                 if today_month == date_birth_month and date_birth_day - today_day == 3:
+                    if i % 10 == 0:
+                        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                                       parse_mode=ParseMode.MARKDOWN)
+                        send_table.clear_rows()
                     try:
                         await client_bot.send_message(client.chat_id, f"{client.name}!" + consultant.birthday_message)
                     except aiogram.exceptions.TelegramBadRequest:
-                        send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+                        send_table.add_row([client.name,
+                                            str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+                        i += 1
                         continue
-                    send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ✅" + "\n"])
+                    send_table.add_row([client.name,
+                                        str(date_birth_day) + " " + date_to_month(date_birth_month) + " ✅" + "\n"])
+                    i += 1
 
             for client in failed:
                 date_birth_month = client.date.month
@@ -129,8 +152,19 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                 today_month = date.today().month
                 today_day = date.today().day
                 if today_month == date_birth_month and date_birth_day - today_day == 3:
+                    if i % 10 == 0:
+                        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                                       parse_mode=ParseMode.MARKDOWN)
+                        send_table.clear_rows()
                     send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+                    i += 1
 
-        await consult_bot.send_message(consultant.chat_id, "Рассылка совершена:")
-        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
-                                       parse_mode=ParseMode.MARKDOWN)
+        if len(send_table.rows) == 0:
+            await consult_bot.send_message(consultant.chat_id, "В ближайшие 3 дня ни у кого нет дня рождения.\n "
+                                                               "Список рассылки пуст")
+        else:
+            await consult_bot.send_message(consultant.chat_id, "Рассылка совершена:")
+            await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                           parse_mode=ParseMode.MARKDOWN)
+        await consult_bot.send_message(consultant.chat_id, "Что вы хотите сделать?",
+                                       reply_markup=main_menu_keyboard())
