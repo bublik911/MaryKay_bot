@@ -4,9 +4,11 @@ import prettytable
 from datetime import date
 
 from aiogram import Bot
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram.enums.parse_mode import ParseMode
+from aiogram.utils.media_group import MediaGroupBuilder
 
+import db.files
 from misc.consts import months, response_months, days_in_month
 
 from keyboards.url_admin_keyboard import url_admin_keyboard
@@ -63,6 +65,30 @@ def create_send_list(message: Message, null_chat_id: bool):
     return response
 
 
+async def send_all_message_to_client(bot: Bot, consultant_chat_id: int, client_chat_id: int, name: str, text: str):
+    photo_list = db.files.get_photo_for_all_message(consultant_chat_id)
+    if len(photo_list) == 0:
+        await bot.send_message(client_chat_id, f"Здравствуйте! {name}\n" + text)
+    else:
+        media = MediaGroupBuilder(caption=f"Здравствуйте! {name}\n" + text)
+        for photo in photo_list:
+            ph = FSInputFile(photo)
+            media.add_photo(media=ph)
+        await bot.send_media_group(client_chat_id, media=media.build())
+
+
+async def send_birthday_message_to_client(bot: Bot, consultant_chat_id: int, client_chat_id: int, name: str, text: str):
+    photo_list = db.files.get_photo_for_birthday_message(consultant_chat_id)
+    if len(photo_list) == 0:
+        await bot.send_message(client_chat_id, f"{name}! \n" + text)
+    else:
+        media = MediaGroupBuilder(caption=f"Здравствуйте! {name}\n" + text)
+        for photo in photo_list:
+            ph = FSInputFile(photo)
+            media.add_photo(media=ph)
+        await bot.send_media_group(client_chat_id, media=media.build())
+
+
 async def all_sending(bot: Bot, message: Message, text: str):
     send_table = prettytable.PrettyTable()
     send_table.field_names = ["Имя", "Телефон"]
@@ -87,7 +113,12 @@ async def all_sending(bot: Bot, message: Message, text: str):
                                      parse_mode=ParseMode.MARKDOWN)
                 send_table.clear_rows()
             try:
-                await bot.send_message(client.chat_id, f"Здравствуйте! {client.name}\n" + text)
+
+                await send_all_message_to_client(bot=bot,
+                                                 consultant_chat_id=message.chat.id,
+                                                 client_chat_id=client.chat_id,
+                                                 name=client.name, text=text)
+
             except aiogram.exceptions.TelegramBadRequest:
                 send_table.add_row([client.name, "+7" + client.phone + " ❌" + "\n"])
                 i += 1
@@ -136,7 +167,11 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                                                        parse_mode=ParseMode.MARKDOWN)
                         send_table.clear_rows()
                     try:
-                        await client_bot.send_message(client.chat_id, f"{client.name}!" + consultant.birthday_message)
+                        await send_birthday_message_to_client(bot=client_bot,
+                                                              consultant_chat_id=consultant.chat_id,
+                                                              client_chat_id=client.chat_id,
+                                                              name=client.name,
+                                                              text=consultant.birthday_message)
                     except aiogram.exceptions.TelegramBadRequest:
                         send_table.add_row([client.name,
                                             str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
@@ -168,3 +203,6 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                                            parse_mode=ParseMode.MARKDOWN)
         await consult_bot.send_message(consultant.chat_id, "Что вы хотите сделать?",
                                        reply_markup=main_menu_keyboard())
+
+
+
