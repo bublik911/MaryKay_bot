@@ -2,20 +2,25 @@ import datetime
 
 from aiogram.fsm.context import FSMContext
 
-from DataBase.models.ClientModel import Client
-from DataBase.utils import connect
+from db.models.ClientModel import Client
+from db.utils import connect
 
 from typing import NoReturn
 
 
 @connect
-async def create_client(state: FSMContext, pid: int):
+async def create_client(state: FSMContext, pid: int) -> bool:
     client = await state.get_data()
-    Client.create(pid=pid,
-                  name=client['name'],
-                  phone=client['phone'],
-                  date=datetime.date(1980, client['month'], int(client['day'])))
-    await state.clear()
+    if count_clients_by_phone(client['phone']) > 0:
+        await state.clear()
+        return False
+    else:
+        Client.create(pid=pid,
+                      name=client['name'],
+                      phone=client['phone'],
+                      date=datetime.date(1980, client['month'], int(client['day'])))
+        await state.clear()
+        return True
 
 
 @connect
@@ -27,7 +32,7 @@ def delete_client(phone: str, pid: int) -> int:
 
 @connect
 def count_clients_by_phone(phone: str) -> int:
-    return Client.select().where(Client.phone == phone).count()
+    return Client.select().where((Client.phone == phone) & (Client.deleted_at.is_null())).count()
 
 
 @connect
@@ -42,10 +47,10 @@ def get_clients_list_by_pid(pid: int) -> list:
 
 
 @connect
-def get_clients_list_by_pid_chat_id(pid: int) -> list:
+def get_clients_list_by_pid_chat_id(pid: int, null_chat_id: bool) -> list:
     return Client.select().where((Client.pid == pid) &
                                     (Client.deleted_at.is_null()) &
-                                    (Client.chat_id.is_null(False)))
+                                    (Client.chat_id.is_null(null_chat_id)))
 
 
 @connect

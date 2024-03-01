@@ -1,4 +1,4 @@
-from DataBase.config import db
+from db.config import db
 
 
 def connect(request):

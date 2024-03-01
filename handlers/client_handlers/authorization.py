@@ -9,7 +9,7 @@ from states import Start
 
 from misc.utils import phone_parse
 
-from DataBase.repositories import ClientRepository
+from db.repositories import ClientRepository
 
 router = Router()
 
@@ -21,11 +21,11 @@ async def authorization(message: Message, state: FSMContext):
                          f" Если вам нужна помощь, обратитесь к нашему администратору. Он сможет вам помочь!",
                          reply_markup=url_admin_keyboard())
     await message.answer("Введите свой номер телефона")
-    await state.set_state(Start.client)
+    await state.set_state(Start.waiting)
 
 
 @router.message(
-    Start.client
+    Start.waiting
 )
 async def client_check_finish(message: Message, state: FSMContext):
     if len(phone_parse(message.text)) < 10:

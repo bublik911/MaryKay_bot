@@ -1,8 +1,7 @@
-import handlers
+from handlers import consult_handlers
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
 from keyboards.month_keyboard import month_keyboard
@@ -11,7 +10,7 @@ from keyboards.check_client_keyboard import check_client_keyboard
 
 from states import AddClient
 
-from DataBase.repositories import ClientRepository, ConsultantRepository
+from db.repositories import ClientRepository, ConsultantRepository
 
 from misc.utils import phone_parse, month_to_date, date_to_month, correct_date
 from misc.consts import ADD_CLIENT, ALL_OK_WITH_MARK, FILL_AGAIN
@@ -20,7 +19,7 @@ router = Router()
 
 
 @router.message(
-    Text(ADD_CLIENT),
+    F.text == ADD_CLIENT,
     AddClient.transition
 )
 async def start(message: Message, state: FSMContext):
@@ -73,17 +72,20 @@ async def add_client_day(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text(ALL_OK_WITH_MARK)
+    F.text == ALL_OK_WITH_MARK
 )
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
-    await ClientRepository.create_client(state, pid)
-    await handlers.menu.main_menu(message, state)
+    if await ClientRepository.create_client(state, pid):
+        await message.answer("Клиент добавлен")
+    else:
+        await message.answer("Ошибка создания клиента. Такой номер телефона уже зарегистрирован")
+    await consult_handlers.menu.main_menu(message, state)
 
 
 @router.message(
     AddClient.commit,
-    Text(FILL_AGAIN)
+    F.text == FILL_AGAIN
 )
 async def again(message: Message, state: FSMContext):
     await state.clear()

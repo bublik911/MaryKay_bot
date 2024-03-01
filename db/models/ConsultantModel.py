@@ -1,6 +1,6 @@
 from peewee import *
 
-from DataBase.config import db
+from db.config import db
 
 
 class Consultant(Model):

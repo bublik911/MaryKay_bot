@@ -1,4 +1,4 @@
-import handlers
+from handlers import consult_handlers
 
 from aiogram import Router
 from aiogram.fsm.context import FSMContext
@@ -35,12 +35,12 @@ async def answer_routing(message: Message, state: FSMContext):
 
     if message.text == CHECK_CLIENTS_BASE:
         await state.set_state(CheckBase.transition)
-        await handlers.check_clients.check_base(message, state)
+        await consult_handlers.check_clients.check_base(message, state)
 
     elif message.text == ADD_CLIENT:
         await state.set_state(AddClient.transition)
-        await handlers.add_client.start(message, state)
+        await consult_handlers.add_client.start(message, state)
 
     elif message.text == SENDING:
         await state.set_state(Sending.transition)
-        await handlers.sending.sending_start(message, state)
+        await consult_handlers.sending.sending_start(message, state)

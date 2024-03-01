@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-aiogram = "3.0.0b7"
+aiogram = "3.4.1"
 apscheduler = "^3.10.1"
 peewee = "^3.16.2"
 aiomysql = "^0.2.0"

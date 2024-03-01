@@ -1,12 +1,11 @@
-import handlers
+from handlers import consult_handlers
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
-from DataBase.repositories import ClientRepository
-from DataBase.repositories import ConsultantRepository
+from db.repositories import ClientRepository
+from db.repositories import ConsultantRepository
 
 from states import CheckBase, DeleteClient
 
@@ -18,7 +17,7 @@ router = Router()
 
 
 @router.message(
-    Text(DELETE_CLIENT),
+    F.text == DELETE_CLIENT,
     DeleteClient.transition
 )
 async def start(message: Message, state: FSMContext):
@@ -47,7 +46,7 @@ async def confirm(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text(YES),
+    F.text == YES,
     DeleteClient.commit
 )
 async def delete_commit(message: Message, state: FSMContext):
@@ -67,12 +66,12 @@ async def delete_commit(message: Message, state: FSMContext):
         i += 1
     await state.set_state(CheckBase.transition)
     await message.answer("Таблица изменена:")
-    await handlers.check_clients.check_base(message, state)
+    await consult_handlers.check_clients.check_base(message, state)
 
 
 @router.message(
-    Text(NO),
+    F.text == NO,
     DeleteClient.commit
 )
 async def return_to_check(message: Message, state: FSMContext):
-    await handlers.check_clients.check_base(message, state)
+    await consult_handlers.check_clients.check_base(message, state)
