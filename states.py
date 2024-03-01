@@ -33,9 +33,15 @@ class Menu(Transition):
 
 class Sending(Transition):
     choose = State()
+
     all = State()
     all_edit_start = State()
+    all_text_edit = State()
+    all_photo_edit = State()
     all_edited = State()
+
     birthday = State()
     birthday_edit_start = State()
+    birthday_text_edit = State()
+    birthday_photo_edit = State()
     birthday_edited = State()
