@@ -1,8 +1,7 @@
 from handlers import consult_handlers
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
 from db.repositories import ClientRepository
@@ -18,7 +17,7 @@ router = Router()
 
 
 @router.message(
-    Text(DELETE_CLIENT),
+    F.text == DELETE_CLIENT,
     DeleteClient.transition
 )
 async def start(message: Message, state: FSMContext):
@@ -47,7 +46,7 @@ async def confirm(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text(YES),
+    F.text == YES,
     DeleteClient.commit
 )
 async def delete_commit(message: Message, state: FSMContext):
@@ -71,7 +70,7 @@ async def delete_commit(message: Message, state: FSMContext):
 
 
 @router.message(
-    Text(NO),
+    F.text == NO,
     DeleteClient.commit
 )
 async def return_to_check(message: Message, state: FSMContext):
