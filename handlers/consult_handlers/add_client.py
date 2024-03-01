@@ -1,8 +1,7 @@
 from handlers import consult_handlers
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
-from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
 from keyboards.month_keyboard import month_keyboard
@@ -20,7 +19,7 @@ router = Router()
 
 
 @router.message(
-    Text(ADD_CLIENT),
+    F.text == ADD_CLIENT,
     AddClient.transition
 )
 async def start(message: Message, state: FSMContext):
@@ -73,7 +72,7 @@ async def add_client_day(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text(ALL_OK_WITH_MARK)
+    F.text == ALL_OK_WITH_MARK
 )
 async def commit(message: Message, state: FSMContext):
     pid = ConsultantRepository.get_consultant_id_by_chat_id(message.chat.id)
@@ -86,7 +85,7 @@ async def commit(message: Message, state: FSMContext):
 
 @router.message(
     AddClient.commit,
-    Text(FILL_AGAIN)
+    F.text == FILL_AGAIN
 )
 async def again(message: Message, state: FSMContext):
     await state.clear()
