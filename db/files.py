@@ -3,10 +3,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from aiogram import Bot
 from aiogram.types import Message
 
-from db.repositories import ConsultantRepository
+from repositories import ConsultantRepository
 
 load_dotenv()
 
@@ -72,12 +71,13 @@ def clear_photos(message: Message, specify: str):
     for file in files:
         os.remove(file)
 
+
 def path_to_download(message: Message) -> str:
     os.chdir(str(Path.home()))
     os.chdir(os.getenv("FILE_STORAGE"))
     os.chdir(str(message.chat.id))
     return os.getcwd()
 
-# create_directories()
-#
-# get_photo_for_all_message(746330306)
+
+if __name__ == "__main__":
+    create_directories()
