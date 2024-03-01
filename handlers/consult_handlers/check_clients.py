@@ -1,10 +1,9 @@
 import prettytable
 from handlers import consult_handlers
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.types import Message
-from aiogram.filters import Text
 from aiogram.fsm.context import FSMContext
 
 from db.repositories import ClientRepository
@@ -22,7 +21,7 @@ router = Router()
 
 
 @router.message(
-    Text(CHECK_CLIENTS_BASE)
+    F.text == CHECK_CLIENTS_BASE
 )
 @router.message(
     CheckBase.transition
@@ -43,12 +42,15 @@ async def check_base(message: Message, state: FSMContext):
                        correct_date(str(client.date.day)) + " " + date_to_month(client.date.month) + "\n"])
         if i % 10 == 0:
             await message.answer(f"`{table}`",
-                                 parse_mode=ParseMode.MARKDOWN)
+                                 parse_mode=ParseMode.MARKDOWN,
+                                 reply_markup=check_clients_keyboard())
             table.clear_rows()
         i += 1
-    if len(table.rows) == 0:
+    if len(table.rows) == 0 and i == 1:
         await message.answer("Таблица пуста")
         await consult_handlers.menu.main_menu(message, state)
+    elif i % 10 == 1:
+        await state.set_state(CheckBase.waiting)
     else:
         await message.answer(f"`{table}`",
                              parse_mode=ParseMode.MARKDOWN,
