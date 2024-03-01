@@ -16,9 +16,9 @@ from aiogram.utils.media_group import MediaGroupBuilder
 from misc.utils import all_sending
 from misc.consts import SENDING, ALL_SENDING, SEND, CHANGE, BIRTHDAY_SENDING, EXCELLENT
 
-import db
-from db.repositories import ConsultantRepository
-from db import files
+import DataBase
+from DataBase.repositories import ConsultantRepository
+from DataBase import files
 
 from states import Sending
 
@@ -51,7 +51,7 @@ async def sending_start(message: Message, state: FSMContext):
     Sending.choose
 )
 async def all_send(message: Message, state: FSMContext):
-    photo_list = db.files.get_photo_for_all_message(message.chat.id)
+    photo_list = DataBase.files.get_photo_for_all_message(message.chat.id)
     text = ConsultantRepository.get_all_message(message)
     await message.answer("Сейчас сообщение для рассылки всем клиентам выглядит так:\n\n"
                          "Здравствуйте, <имя клиента>\n"
@@ -145,7 +145,7 @@ async def photo_edit(message: Message, state: FSMContext, album: list[Message]):
     Sending.birthday_edited
 )
 async def birthday_send(message: Message, state: FSMContext):
-    photo_list = db.files.get_photo_for_birthday_message(message.chat.id)
+    photo_list = DataBase.files.get_photo_for_birthday_message(message.chat.id)
     text = ConsultantRepository.get_birthday_message(message)
     await message.answer("Сейчас сообщение для рассылки клиентам ко дню рождения выглядит так:\n\n"
                          "<Имя клиента>!\n"

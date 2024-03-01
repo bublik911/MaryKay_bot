@@ -4,8 +4,8 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from db.repositories import ClientRepository
-from db.repositories import ConsultantRepository
+from DataBase.repositories import ClientRepository
+from DataBase.repositories import ConsultantRepository
 
 from states import CheckBase, DeleteClient
 

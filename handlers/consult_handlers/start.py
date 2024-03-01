@@ -11,7 +11,7 @@ from states import Start
 
 from misc.utils import phone_parse
 
-from db.repositories import ConsultantRepository
+from DataBase.repositories import ConsultantRepository
 router = Router()
 
 
