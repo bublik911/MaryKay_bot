@@ -1,7 +1,7 @@
 from peewee import *
 
-from db.models.ConsultantModel import Consultant
-from db.config import db
+from DataBase.models.ConsultantModel import Consultant
+from DataBase.config import db
 
 
 class Client(Model):
