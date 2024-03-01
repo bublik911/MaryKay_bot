@@ -7,6 +7,11 @@ from db.utils import connect
 
 
 @connect
+def get_all_consultants_chat_id():
+    return Consultant.select(Consultant.chat_id)
+
+
+@connect
 def get_consultant_id_by_chat_id(chat_id: int) -> int:
     return Consultant.select(Consultant.id).where(Consultant.chat_id == chat_id).get()
 
