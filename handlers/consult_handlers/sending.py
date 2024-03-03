@@ -22,6 +22,7 @@ import files
 
 from states import Sending
 
+from keyboards.delete_photos import delete_photos
 from keyboards.url_admin_keyboard import url_admin_keyboard
 from keyboards.change_keyboard import change_keyboard
 from keyboards.send_type_keyboard import send_type_keyboard
@@ -124,8 +125,23 @@ async def text_edit(message: Message, state: FSMContext):
 )
 async def photo(message: Message, state: FSMContext):
     await message.answer("Пришлите фотографии, которые хотите прикрепить к сообщению.\n"
-                         "Внимание! Число фото в сообщении ограничено: макс. 10 шт.")
+                         "Внимание! Число фото в сообщении ограничено: макс. 10 шт.\n\n"
+                         ""
+                         "Если вы хотите открепить фотографии от сообщения, нажмите кнопку ниже",
+                         reply_markup=delete_photos())
     await state.set_state(Sending.all_photo_edit)
+
+
+@router.message(
+    F.text == "Удалить фотографии"
+)
+async def delete_all_photos(message: Message, state: FSMContext):
+    files.clear_photos(message, "all")
+    await message.answer("Фотографии удалены",
+                         reply_markup=ReplyKeyboardRemove())
+    await state.clear()
+    await all_send(message, state)
+
 
 
 @router.message(
