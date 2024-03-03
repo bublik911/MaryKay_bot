@@ -2,7 +2,9 @@ from handlers import consult_handlers
 
 from aiogram import Router, F
 from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from DataBase.repositories import ClientRepository
 from DataBase.repositories import ConsultantRepository
@@ -17,12 +19,24 @@ router = Router()
 
 
 @router.message(
+    Command("delete_client")
+)
+async def delete_start(message: Message, state: FSMContext):
+    await state.clear()
+    await consult_handlers.check_clients.check_base(message, state)
+    await message.answer("Введите номер клиента в таблице для удаления",
+                         reply_markup=ReplyKeyboardRemove())
+    await state.set_state(DeleteClient.confirm)
+
+
+@router.message(
     F.text == DELETE_CLIENT,
     DeleteClient.transition
 )
 async def start(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Введите номер клиента в таблице для удаления")
+    await message.answer("Введите номер клиента в таблице для удаления",
+                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(DeleteClient.confirm)
 
 

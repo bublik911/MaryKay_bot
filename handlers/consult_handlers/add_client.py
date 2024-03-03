@@ -1,7 +1,8 @@
 from handlers import consult_handlers
 
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from keyboards.month_keyboard import month_keyboard
@@ -19,11 +20,15 @@ router = Router()
 
 
 @router.message(
+    Command("add_client")
+)
+@router.message(
     F.text == ADD_CLIENT,
     AddClient.transition
 )
 async def start(message: Message, state: FSMContext):
-    await message.answer("Введите имя клиента")
+    await message.answer("Введите имя клиента",
+                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(AddClient.name)
 
 

@@ -4,6 +4,7 @@ from handlers import consult_handlers
 from aiogram import Router, F
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.types import Message
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from DataBase.repositories import ClientRepository
@@ -20,6 +21,9 @@ from misc.utils import date_to_month, correct_date
 router = Router()
 
 
+@router.message(
+    Command("check_clients")
+)
 @router.message(
     F.text == CHECK_CLIENTS_BASE
 )

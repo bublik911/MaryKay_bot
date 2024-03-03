@@ -8,8 +8,9 @@ from middlewares.media_group_middleware import DownloadPhotoMiddleware
 
 from aiogram import Bot
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message, FSInputFile, ReplyKeyboardRemove
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.utils.media_group import MediaGroupBuilder
 
@@ -36,6 +37,9 @@ router = Router()
 router.message.middleware(middleware=DownloadPhotoMiddleware())
 
 
+@router.message(
+    Command("sending")
+)
 @router.message(
     F.text == SENDING,
     Sending.transition
@@ -101,7 +105,8 @@ async def edit_start(message: Message, state: FSMContext):
     Sending.all_edit_start
 )
 async def text(message: Message, state: FSMContext):
-    await message.answer("Введите текст нового сообщения:")
+    await message.answer("Введите текст нового сообщения:",
+                         reply_markup=ReplyKeyboardRemove())
     await state.set_state(Sending.all_text_edit)
 
 
