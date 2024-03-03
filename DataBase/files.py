@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from aiogram.types import Message
 
-from repositories import ConsultantRepository
+from DataBase.repositories import ConsultantRepository
 
 load_dotenv()
 
