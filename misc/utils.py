@@ -8,7 +8,7 @@ from aiogram.types import Message, FSInputFile
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.utils.media_group import MediaGroupBuilder
 
-import DataBase.files
+import files
 from misc.consts import months, response_months, days_in_month
 
 from keyboards.url_admin_keyboard import url_admin_keyboard
@@ -66,7 +66,7 @@ def create_send_list(message: Message, null_chat_id: bool):
 
 
 async def send_all_message_to_client(bot: Bot, consultant_chat_id: int, client_chat_id: int, name: str, text: str):
-    photo_list = DataBase.files.get_photo_for_all_message(consultant_chat_id)
+    photo_list = files.get_photo_for_all_message(consultant_chat_id)
     if len(photo_list) == 0:
         await bot.send_message(client_chat_id, f"Здравствуйте! {name}\n" + text)
     else:
@@ -78,7 +78,7 @@ async def send_all_message_to_client(bot: Bot, consultant_chat_id: int, client_c
 
 
 async def send_birthday_message_to_client(bot: Bot, consultant_chat_id: int, client_chat_id: int, name: str, text: str):
-    photo_list = DataBase.files.get_photo_for_birthday_message(consultant_chat_id)
+    photo_list = files.get_photo_for_birthday_message(consultant_chat_id)
     if len(photo_list) == 0:
         await bot.send_message(client_chat_id, f"{name}! \n" + text)
     else:
