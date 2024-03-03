@@ -19,6 +19,10 @@ class DownloadPhotoMiddleware(BaseMiddleware):
             data: dict[str, Any]
     ) -> Any:
         if not message.media_group_id:
+            if message.photo is not None:
+                self.album_data["album"] = [message]
+                data['_is_last'] = True
+                data["album"] = self.album_data["album"]
             await handler(message, data)
             return
         try:
@@ -31,6 +35,6 @@ class DownloadPhotoMiddleware(BaseMiddleware):
             data["album"] = self.album_data[message.media_group_id]
             await handler(message, data)
 
-        if message.media_group_id and data.get("_is_last"):
+        if (message.media_group_id or message.photo is not None) and data.get("_is_last"):
             del self.album_data[message.media_group_id]
             del data['_is_last']
