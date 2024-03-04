@@ -44,3 +44,5 @@ async def answer_routing(message: Message, state: FSMContext):
     elif message.text == SENDING:
         await state.set_state(Sending.transition)
         await consult_handlers.sending.sending_start(message, state)
+    else:
+        await state.clear()
