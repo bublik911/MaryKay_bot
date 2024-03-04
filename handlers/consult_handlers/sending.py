@@ -63,7 +63,7 @@ async def all_send(message: Message, state: FSMContext):
 
     if len(photo_list) != 0:
         media = MediaGroupBuilder(caption="Здравствуйте, <имя клиента>\n"
-                                          f"_{text}_")
+                                          f"{text}",)
         for photo in reversed(photo_list):
             ph = FSInputFile(photo)
             media.add_photo(media=ph)
@@ -177,7 +177,7 @@ async def birthday_send(message: Message, state: FSMContext):
 
     if len(photo_list) != 0:
         media = MediaGroupBuilder(caption="<Имя клиента>!\n"
-                                          f"_{text}_")
+                                          f"{text}")
         for photo in reversed(photo_list):
             ph = FSInputFile(photo)
             media.add_photo(media=ph)
