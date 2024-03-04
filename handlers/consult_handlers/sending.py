@@ -57,14 +57,13 @@ async def sending_start(message: Message, state: FSMContext):
 async def all_send(message: Message, state: FSMContext):
     photo_list = files.get_photo_for_all_message(message.chat.id)
     text = ConsultantRepository.get_all_message(message)
-    await message.answer("Сейчас сообщение для рассылки всем клиентам выглядит так:\n\n"
-                         "Здравствуйте, <имя клиента>\n"
-                         f"_{text}_",
+    await message.answer("Сейчас сообщение для рассылки всем клиентам выглядит так:",
                          reply_markup=send_all_type_keyboard(),
                          parse_mode=ParseMode.MARKDOWN)
 
     if len(photo_list) != 0:
-        media = MediaGroupBuilder(caption="Также к сообщению будут прикреплены эти фото")
+        media = MediaGroupBuilder(caption="Здравствуйте, <имя клиента>\n"
+                                          f"_{text}_")
         for photo in reversed(photo_list):
             ph = FSInputFile(photo)
             media.add_photo(media=ph)
@@ -73,6 +72,11 @@ async def all_send(message: Message, state: FSMContext):
         except aiogram.exceptions.TelegramBadRequest:
             await message.answer("Ошибка отправки фото. Обратитесь к администратору",
                                  reply_markup=url_admin_keyboard())
+    else:
+        await message.answer("Здравствуйте, <имя клиента>\n"
+                             f"_{text}_",
+                             reply_markup=send_all_type_keyboard(),
+                             parse_mode=ParseMode.MARKDOWN)
     await state.set_state(Sending.all)
 
 
@@ -167,14 +171,13 @@ async def photo_edit(message: Message, state: FSMContext, album: list[Message]):
 async def birthday_send(message: Message, state: FSMContext):
     photo_list = files.get_photo_for_birthday_message(message.chat.id)
     text = ConsultantRepository.get_birthday_message(message)
-    await message.answer("Сейчас сообщение для рассылки клиентам ко дню рождения выглядит так:\n\n"
-                         "<Имя клиента>!\n"
-                         f"_{text}_",
+    await message.answer("Сейчас сообщение для рассылки клиентам ко дню рождения выглядит так:",
                          reply_markup=send_birthday_type_keyboard(),
                          parse_mode=ParseMode.MARKDOWN)
 
     if len(photo_list) != 0:
-        media = MediaGroupBuilder(caption="Также к сообщению будут прикреплены эти фото")
+        media = MediaGroupBuilder(caption="<Имя клиента>!\n"
+                                          f"_{text}_")
         for photo in reversed(photo_list):
             ph = FSInputFile(photo)
             media.add_photo(media=ph)
@@ -183,6 +186,11 @@ async def birthday_send(message: Message, state: FSMContext):
         except aiogram.exceptions.TelegramBadRequest:
             await message.answer("Ошибка отправки фото. Обратитесь к администратору",
                                  reply_markup=url_admin_keyboard())
+    else:
+        await message.answer("<Имя клиента>!\n"
+                             f"_{text}_",
+                             reply_markup=send_birthday_type_keyboard(),
+                             parse_mode=ParseMode.MARKDOWN)
     await state.set_state(Sending.birthday)
 
 
