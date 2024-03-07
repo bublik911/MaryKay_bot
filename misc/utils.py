@@ -194,15 +194,12 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
                     send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
                     i += 1
 
-        if len(send_table.rows) == 0:
-            await consult_bot.send_message(consultant.chat_id, "В ближайшие 3 дня ни у кого нет дня рождения.\n "
-                                                               "Список рассылки пуст")
-        else:
+        if len(send_table.rows) != 0:
             await consult_bot.send_message(consultant.chat_id, "Рассылка совершена:")
             await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
                                            parse_mode=ParseMode.MARKDOWN)
-        await consult_bot.send_message(consultant.chat_id, "Что вы хотите сделать?",
-                                       reply_markup=main_menu_keyboard())
+            await consult_bot.send_message(consultant.chat_id, "Что вы хотите сделать?",
+                                           reply_markup=main_menu_keyboard())
 
 
 
