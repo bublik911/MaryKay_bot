@@ -149,50 +149,46 @@ async def birthday_sending(consult_bot: Bot, client_bot: Bot):
         correct = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id, False)
         failed = ClientRepository.get_clients_list_by_pid_chat_id(consultant.id, True)
 
-        if len(correct) == 0 or len(failed) + len(correct) == 0:
-            await consult_bot.send_message(consultant.chat_id, "Ошибка рассылки с поздравлением. "
-                                                               "Обратитесь к администратору",
-                                           reply_markup=url_admin_keyboard())
-        else:
-            i = 1
-            for client in correct:
-                date_birth_month = client.date.month
-                date_birth_day = client.date.day
-                today_month = date.today().month
-                today_day = date.today().day
+        i = 1
+        for client in correct:
+            date_birth_month = client.date.month
+            date_birth_day = client.date.day
+            today_month = date.today().month
+            today_day = date.today().day
 
-                if today_month == date_birth_month and date_birth_day - today_day == 3:
-                    if i % 10 == 0:
-                        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
-                                                       parse_mode=ParseMode.MARKDOWN)
-                        send_table.clear_rows()
-                    try:
-                        await send_birthday_message_to_client(bot=client_bot,
-                                                              consultant_chat_id=consultant.chat_id,
-                                                              client_chat_id=client.chat_id,
-                                                              name=client.name,
-                                                              text=consultant.birthday_message)
-                    except aiogram.exceptions.TelegramBadRequest:
-                        send_table.add_row([client.name,
-                                            str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
-                        i += 1
-                        continue
+            if today_month == date_birth_month and date_birth_day - today_day == 3:
+                if i % 10 == 0:
+                    await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                                   parse_mode=ParseMode.MARKDOWN)
+                    send_table.clear_rows()
+                try:
+                    await send_birthday_message_to_client(bot=client_bot,
+                                                          consultant_chat_id=consultant.chat_id,
+                                                          client_chat_id=client.chat_id,
+                                                          name=client.name,
+                                                          text=consultant.birthday_message)
+                except aiogram.exceptions.TelegramBadRequest:
                     send_table.add_row([client.name,
-                                        str(date_birth_day) + " " + date_to_month(date_birth_month) + " ✅" + "\n"])
+                                        str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
                     i += 1
+                    continue
+                send_table.add_row([client.name,
+                                    str(date_birth_day) + " " + date_to_month(date_birth_month) + " ✅" + "\n"])
+                i += 1
 
-            for client in failed:
-                date_birth_month = client.date.month
-                date_birth_day = client.date.day
-                today_month = date.today().month
-                today_day = date.today().day
-                if today_month == date_birth_month and date_birth_day - today_day == 3:
-                    if i % 10 == 0:
-                        await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
-                                                       parse_mode=ParseMode.MARKDOWN)
-                        send_table.clear_rows()
-                    send_table.add_row([client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
-                    i += 1
+        for client in failed:
+            date_birth_month = client.date.month
+            date_birth_day = client.date.day
+            today_month = date.today().month
+            today_day = date.today().day
+            if today_month == date_birth_month and date_birth_day - today_day == 3:
+                if i % 10 == 0:
+                    await consult_bot.send_message(consultant.chat_id, f"`{send_table}`",
+                                                   parse_mode=ParseMode.MARKDOWN)
+                    send_table.clear_rows()
+                send_table.add_row(
+                    [client.name, str(date_birth_day) + " " + date_to_month(date_birth_month) + " ❌" + "\n"])
+                i += 1
 
         if len(send_table.rows) != 0:
             await consult_bot.send_message(consultant.chat_id, "Рассылка совершена:")
